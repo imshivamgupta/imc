@@ -8,7 +8,9 @@
       <div class="nav-cards">
         <NuxtLink to="/users" class="nav-card">
           <h3>👥 Users Management</h3>
-          <p>View, create, edit, and delete users (Client-side)</p>
+          <p>
+            Create, edit, and manage users with profile images (Client-side)
+          </p>
         </NuxtLink>
         <NuxtLink
           to="/users-ssr"
@@ -16,7 +18,7 @@
           @click="navigateToSSR"
         >
           <h3>🚀 Users Management (SSR)</h3>
-          <p>Server-side rendered users page</p>
+          <p>Server-side rendered users page with image support</p>
         </NuxtLink>
         <NuxtLink to="/posts" class="nav-card posts-card">
           <h3>📝 Posts</h3>
@@ -28,13 +30,14 @@
     <div class="features">
       <h2>Features</h2>
       <ul>
-        <li>User Management API</li>
+        <li>User Management API with Image Upload</li>
         <li>External API Integration (JSONPlaceholder)</li>
         <li>Database Integration</li>
         <li>Modern Vue 3 + Nuxt 3</li>
         <li>TypeScript Support</li>
         <li>Client-side Rendering & Server-side Rendering</li>
         <li>Hybrid Rendering Options</li>
+        <li>File Upload & Image Management</li>
       </ul>
     </div>
   </div>

@@ -17,6 +17,7 @@ export const UserService = {
         name VARCHAR(100) NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
         age INTEGER,
+        image_path VARCHAR(255),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -27,12 +28,13 @@ export const UserService = {
    */
   async createUser(userData: CreateUserRequest): Promise<User> {
     const result = await db.query<User>(
-      "INSERT INTO users (name, email, age, phone) VALUES ($1, $2, $3, $4) RETURNING *",
+      "INSERT INTO users (name, email, age, phone, image_path) VALUES ($1, $2, $3, $4, $5) RETURNING *",
       [
         userData.name,
         userData.email,
         userData.age || null,
         userData.phone || null,
+        userData.image_path || null,
       ]
     );
 
@@ -119,6 +121,11 @@ export const UserService = {
     if (userData.phone !== undefined) {
       fields.push(`phone = $${paramIndex++}`);
       values.push(userData.phone);
+    }
+
+    if (userData.image_path !== undefined) {
+      fields.push(`image_path = $${paramIndex++}`);
+      values.push(userData.image_path);
     }
 
     if (fields.length === 0) {

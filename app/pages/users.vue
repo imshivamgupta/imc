@@ -47,6 +47,17 @@
               :key="user.id"
               class="user-card"
             >
+              <div class="user-avatar">
+                <img
+                  v-if="user.image_path"
+                  :src="user.image_path"
+                  :alt="user.name"
+                  class="avatar-image"
+                />
+                <div v-else class="avatar-placeholder">
+                  {{ user.name.charAt(0).toUpperCase() }}
+                </div>
+              </div>
               <div class="user-info">
                 <h3>{{ user.name }}</h3>
                 <p class="email">{{ user.email }}</p>
@@ -113,6 +124,13 @@
         </div>
 
         <form @submit.prevent="submitUser" class="user-form">
+          <UiImageUpload
+            v-model="userForm.image_path"
+            label="Profile Image"
+            @upload-success="onImageUploadSuccess"
+            @upload-error="onImageUploadError"
+          />
+
           <div class="form-group">
             <label for="name">Name *</label>
             <input
@@ -186,6 +204,7 @@ interface User {
   email: string;
   age?: number;
   phone?: string;
+  image_path?: string;
   created_at: string;
 }
 
@@ -204,6 +223,7 @@ interface UserForm {
   email: string;
   age?: number;
   phone?: string;
+  image_path?: string;
 }
 
 // Set page metadata
@@ -234,6 +254,7 @@ const userForm = ref<UserForm>({
   email: "",
   age: undefined,
   phone: "",
+  image_path: "",
 });
 
 // Fetch users with pagination
@@ -289,6 +310,7 @@ const resetForm = () => {
     email: "",
     age: undefined,
     phone: "",
+    image_path: "",
   };
   formError.value = "";
 };
@@ -306,6 +328,7 @@ const editUser = (user: User) => {
     email: user.email,
     age: user.age,
     phone: user.phone,
+    image_path: user.image_path,
   };
 };
 
@@ -387,6 +410,17 @@ const loadPage = async (page: number) => {
 
   // The useLazyFetch will automatically refetch when currentPage changes
   // due to the computed offset parameter
+};
+
+// Image upload handlers
+const onImageUploadSuccess = (imagePath: string) => {
+  console.log("Image uploaded successfully:", imagePath);
+  // The v-model will automatically update userForm.image_path
+};
+
+const onImageUploadError = (error: string) => {
+  console.error("Image upload error:", error);
+  formError.value = `Image upload failed: ${error}`;
 };
 </script>
 
@@ -545,11 +579,43 @@ const loadPage = async (page: number) => {
   padding: 1.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .user-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.user-avatar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.avatar-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .user-info h3 {

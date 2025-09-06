@@ -5,6 +5,7 @@ export interface User extends Record<string, unknown> {
   email: string;
   age?: number;
   phone?: string;
+  image_path?: string;
   created_at: Date;
 }
 
@@ -13,6 +14,7 @@ export interface CreateUserRequest {
   email: string;
   age?: number;
   phone?: string;
+  image_path?: string;
 }
 
 export interface UpdateUserRequest {
@@ -20,6 +22,7 @@ export interface UpdateUserRequest {
   email?: string;
   age?: number;
   phone?: string;
+  image_path?: string;
 }
 
 // API Response interfaces

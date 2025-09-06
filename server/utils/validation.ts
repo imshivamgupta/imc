@@ -75,6 +75,21 @@ export const ValidationService = {
       }
     }
 
+    // Validate image_path (optional)
+    if (user.image_path !== undefined) {
+      if (typeof user.image_path !== "string") {
+        errors.push({
+          field: "image_path",
+          message: "Image path must be a string",
+        });
+      } else if (user.image_path.length > 255) {
+        errors.push({
+          field: "image_path",
+          message: "Image path must be less than 255 characters",
+        });
+      }
+    }
+
     return { isValid: errors.length === 0, errors };
   },
 
@@ -96,12 +111,13 @@ export const ValidationService = {
       !user.name &&
       !user.email &&
       user.age === undefined &&
-      user.phone === undefined
+      user.phone === undefined &&
+      user.image_path === undefined
     ) {
       errors.push({
         field: "body",
         message:
-          "At least one field (name, email, age, or phone) must be provided",
+          "At least one field (name, email, age, phone, or image_path) must be provided",
       });
       return { isValid: false, errors };
     }
@@ -155,6 +171,21 @@ export const ValidationService = {
         errors.push({
           field: "phone",
           message: "Phone must be less than 20 characters",
+        });
+      }
+    }
+
+    // Validate image_path if provided
+    if (user.image_path !== undefined) {
+      if (typeof user.image_path !== "string") {
+        errors.push({
+          field: "image_path",
+          message: "Image path must be a string",
+        });
+      } else if (user.image_path.length > 255) {
+        errors.push({
+          field: "image_path",
+          message: "Image path must be less than 255 characters",
         });
       }
     }

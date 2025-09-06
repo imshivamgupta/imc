@@ -27,6 +27,13 @@ const migrations = [
       ADD COLUMN IF NOT EXISTS phone VARCHAR(20);
     `,
   },
+  {
+    name: "add_image_path_column_to_users",
+    sql: `
+      ALTER TABLE users 
+      ADD COLUMN IF NOT EXISTS image_path VARCHAR(255);
+    `,
+  },
 ];
 
 export default defineEventHandler(async (event) => {
