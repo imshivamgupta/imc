@@ -6,10 +6,10 @@
     <div class="navigation">
       <h2>Quick Navigation</h2>
       <div class="nav-cards">
-        <NuxtLink to="/users" class="nav-card">
+        <a @click="navigateToUsers" class="nav-card">
           <h3>👥 Users Management</h3>
           <p>View, create, edit, and delete users</p>
-        </NuxtLink>
+        </a>
       </div>
     </div>
 
@@ -30,6 +30,14 @@
 useHead({
   title: "Home",
 });
+
+// Navigation with loader
+const globalLoader = useGlobalLoader();
+
+const navigateToUsers = async () => {
+  globalLoader.showLoader("Loading Users...");
+  await navigateTo("/users");
+};
 </script>
 
 <style scoped>

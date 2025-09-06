@@ -1,7 +1,12 @@
 <template>
   <div class="container">
     <div class="header">
-      <h1>Users Management</h1>
+      <div class="header-left">
+        <button @click="navigateToHome" class="btn btn-secondary back-btn">
+          ← Back to Home
+        </button>
+        <h1>Users Management</h1>
+      </div>
       <button @click="showCreateModal = true" class="btn btn-primary">
         Add New User
       </button>
@@ -191,6 +196,15 @@ useHead({
   title: "Users Management",
 });
 
+// Global loader
+const globalLoader = useGlobalLoader();
+
+// Navigation with loader
+const navigateToHome = async () => {
+  globalLoader.showLoader("Loading Home...");
+  await navigateTo("/");
+};
+
 // Reactive state
 const showCreateModal = ref(false);
 const editingUser = ref<User | null>(null);
@@ -332,6 +346,17 @@ const loadPage = (page: number) => {
   margin-bottom: 2rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid #e5e7eb;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.back-btn {
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
 }
 
 .header h1 {

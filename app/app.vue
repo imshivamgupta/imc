@@ -1,13 +1,29 @@
 <template>
   <div>
+    <!-- Global Loader -->
+    <Transition name="loader" mode="out-in">
+      <GlobalLoader
+        v-if="globalLoader.isLoading.value"
+        :message="globalLoader.message.value"
+      />
+    </Transition>
+
     <!-- Root app wrapper -->
     <NuxtLayout>
-      <NuxtPage />
+      <NuxtPage
+        :transition="{
+          name: 'page',
+          mode: 'out-in',
+        }"
+      />
     </NuxtLayout>
   </div>
 </template>
 
 <script setup lang="ts">
+// Global loader
+const globalLoader = useGlobalLoader();
+
 // Global app setup
 useHead({
   titleTemplate: "%s - Users Management App",
@@ -25,6 +41,7 @@ useHead({
 // Global error handling
 const handleError = (error: any) => {
   console.error("Global error:", error);
+  globalLoader.hideLoader(); // Hide loader on error
 };
 
 // Provide global error handler
@@ -76,9 +93,35 @@ body {
   transition: all 0.3s ease;
 }
 
-.page-enter-from,
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
 .page-leave-to {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(-10px);
+}
+
+/* Layout transition */
+.layout-enter-active,
+.layout-leave-active {
+  transition: all 0.3s ease;
+}
+
+.layout-enter-from,
+.layout-leave-to {
+  opacity: 0;
+}
+
+/* Loader transition */
+.loader-enter-active,
+.loader-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.loader-enter-from,
+.loader-leave-to {
+  opacity: 0;
 }
 </style>
