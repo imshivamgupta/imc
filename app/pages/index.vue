@@ -10,7 +10,11 @@
           <h3>👥 Users Management</h3>
           <p>View, create, edit, and delete users (Client-side)</p>
         </NuxtLink>
-        <NuxtLink to="/users-ssr" class="nav-card ssr-card">
+        <NuxtLink
+          to="/users-ssr"
+          class="nav-card ssr-card"
+          @click="navigateToSSR"
+        >
           <h3>🚀 Users Management (SSR)</h3>
           <p>Server-side rendered users page</p>
         </NuxtLink>
@@ -40,6 +44,22 @@
 // Set page metadata
 useHead({
   title: "Home",
+});
+
+// Global loader
+const globalLoader = useGlobalLoader();
+
+// Navigation functions
+const navigateToSSR = () => {
+  globalLoader.showLoader("Loading SSR Users Page...");
+  // NuxtLink will handle the actual navigation
+};
+
+onMounted(() => {
+  // Hide loader when page is fully mounted and hydrated
+  nextTick(() => {
+    globalLoader.hideLoader();
+  });
 });
 </script>
 

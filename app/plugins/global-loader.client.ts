@@ -19,14 +19,23 @@ export default defineNuxtPlugin({
       });
 
       // Hide loader after route change is complete and page is rendered
-      router.afterEach(() => {
-        // Wait for the next tick to ensure the new page component is mounted
-        nextTick(() => {
-          // Add a small delay to ensure smooth transition
-          setTimeout(() => {
-            globalLoader.hideLoader();
-          }, 200);
-        });
+      router.afterEach((to) => {
+        // Check if the destination route is SSR
+        const isSSRRoute = to.path === "/users-ssr" || to.meta?.ssr === true;
+
+        if (isSSRRoute) {
+          // For SSR routes, let the page component handle hiding the loader
+          // Don't auto-hide here as the page needs to be fully mounted and hydrated
+          console.log("SSR route detected, page will handle loader hiding");
+        } else {
+          // For SPA routes, hide loader after ensuring page is mounted
+          nextTick(() => {
+            // Add a small delay to ensure smooth transition for SPA pages
+            setTimeout(() => {
+              globalLoader.hideLoader();
+            }, 100); // Reduced delay for SPA pages
+          });
+        }
       });
 
       // Also handle navigation errors

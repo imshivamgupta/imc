@@ -2,17 +2,21 @@
   <div class="container">
     <div class="header">
       <div class="header-left">
-        <NuxtLink to="/" class="btn btn-secondary back-btn">
+        <button @click="navigateToHome" class="btn btn-secondary back-btn">
           ← Back to Home
-        </NuxtLink>
+        </button>
         <h1>Users Management (SSR)</h1>
       </div>
       <div class="header-actions">
         <button @click="showCreateModal = true" class="btn btn-primary">
           Add New User
         </button>
-        <button @click="refresh()" :disabled="pending" class="btn btn-secondary">
-          {{ pending ? 'Refreshing...' : 'Refresh' }}
+        <button
+          @click="refresh()"
+          :disabled="pending"
+          class="btn btn-secondary"
+        >
+          {{ pending ? "Refreshing..." : "Refresh" }}
         </button>
       </div>
     </div>
@@ -26,7 +30,7 @@
 
       <div v-else-if="error" class="error">
         <h3>Failed to load users</h3>
-        <p>{{ error?.message || error || 'An unexpected error occurred' }}</p>
+        <p>{{ error?.message || error || "An unexpected error occurred" }}</p>
         <button @click="refresh()" class="btn btn-primary retry-btn">
           Try Again
         </button>
@@ -43,9 +47,7 @@
       <div v-else>
         <div class="users-stats">
           <p>Total Users: {{ users?.data?.total || 0 }}</p>
-          <div class="ssr-badge">
-            🚀 Server-Side Rendered
-          </div>
+          <div class="ssr-badge">🚀 Server-Side Rendered</div>
         </div>
 
         <div class="users-grid">
@@ -88,7 +90,9 @@
           <span class="page-info">Page {{ currentPage }}</span>
           <button
             @click="loadPage(currentPage + 1)"
-            :disabled="users?.data && currentPage * 10 >= users.data.total || pending"
+            :disabled="
+              (users?.data && currentPage * 10 >= users.data.total) || pending
+            "
             class="btn"
           >
             Next
@@ -211,6 +215,31 @@ useHead({
 // Enable SSR for this page (this is the default behavior)
 definePageMeta({
   ssr: true,
+  title: "SSR Users Page",
+});
+
+// Global loader
+const globalLoader = useGlobalLoader();
+const navigationLoader = useNavigationLoader();
+
+// Navigation with loader
+const navigateToHome = async () => {
+  globalLoader.showLoader("Loading Home...");
+  await navigationLoader.navigateTo("/");
+};
+
+// Handle page load completion
+onMounted(() => {
+  // Hide loader when page is fully mounted and hydrated
+  nextTick(() => {
+    globalLoader.hideLoader();
+  });
+});
+
+// Show loader when navigating away from this page
+onBeforeUnmount(() => {
+  // This will be called when navigating away
+  globalLoader.hideLoader();
 });
 
 // Reactive state
@@ -236,7 +265,7 @@ const {
   error,
   refresh,
 } = await useFetch<ApiResponse>("/api/users", {
-  key: 'users-list-ssr',
+  key: "users-list-ssr",
   query: {
     limit,
     offset: computed(() => (currentPage.value - 1) * limit),
@@ -324,7 +353,7 @@ const submitUser = async () => {
     await refresh();
     closeModal();
   } catch (err: any) {
-    console.error('Submit user error:', err);
+    console.error("Submit user error:", err);
     formError.value = err?.data?.error || err?.message || "An error occurred";
   } finally {
     submitting.value = false;
@@ -345,14 +374,17 @@ const deleteUser = async (userId: number) => {
     // Refresh the users list
     await refresh();
   } catch (err: any) {
-    console.error('Delete user error:', err);
-    alert("Error deleting user: " + (err.data?.error || err.message || "Unknown error"));
+    console.error("Delete user error:", err);
+    alert(
+      "Error deleting user: " +
+        (err.data?.error || err.message || "Unknown error")
+    );
   }
 };
 
 const loadPage = async (page: number) => {
   if (page === currentPage.value || page < 1 || pending.value) return;
-  
+
   currentPage.value = page;
 };
 </script>
@@ -466,8 +498,12 @@ const loadPage = async (page: number) => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error {
@@ -696,15 +732,15 @@ const loadPage = async (page: number) => {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .header-actions {
     justify-content: center;
   }
-  
+
   .users-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .users-stats {
     flex-direction: column;
     align-items: stretch;
