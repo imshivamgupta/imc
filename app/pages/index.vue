@@ -6,10 +6,18 @@
     <div class="navigation">
       <h2>Quick Navigation</h2>
       <div class="nav-cards">
-        <a @click="navigateToUsers" class="nav-card">
+        <NuxtLink to="/users" class="nav-card">
           <h3>👥 Users Management</h3>
-          <p>View, create, edit, and delete users</p>
-        </a>
+          <p>View, create, edit, and delete users (Client-side)</p>
+        </NuxtLink>
+        <NuxtLink to="/users-ssr" class="nav-card ssr-card">
+          <h3>🚀 Users Management (SSR)</h3>
+          <p>Server-side rendered users page</p>
+        </NuxtLink>
+        <NuxtLink to="/posts" class="nav-card posts-card">
+          <h3>📝 Posts</h3>
+          <p>Browse posts from JSONPlaceholder API</p>
+        </NuxtLink>
       </div>
     </div>
 
@@ -17,9 +25,12 @@
       <h2>Features</h2>
       <ul>
         <li>User Management API</li>
+        <li>External API Integration (JSONPlaceholder)</li>
         <li>Database Integration</li>
         <li>Modern Vue 3 + Nuxt 3</li>
         <li>TypeScript Support</li>
+        <li>Client-side Rendering & Server-side Rendering</li>
+        <li>Hybrid Rendering Options</li>
       </ul>
     </div>
   </div>
@@ -30,14 +41,6 @@
 useHead({
   title: "Home",
 });
-
-// Navigation with loader
-const globalLoader = useGlobalLoader();
-
-const navigateToUsers = async () => {
-  globalLoader.showLoader("Loading Users...");
-  await navigateTo("/users");
-};
 </script>
 
 <style scoped>
@@ -64,11 +67,20 @@ const navigateToUsers = async () => {
   text-decoration: none;
   transition: transform 0.2s, box-shadow 0.2s;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 
 .nav-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.posts-card {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.ssr-card {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
 .nav-card h3 {

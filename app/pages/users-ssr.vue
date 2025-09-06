@@ -2,102 +2,99 @@
   <div class="container">
     <div class="header">
       <div class="header-left">
-        <button @click="navigateToHome" class="btn btn-secondary back-btn">
+        <NuxtLink to="/" class="btn btn-secondary back-btn">
           ← Back to Home
-        </button>
-        <h1>Users Management</h1>
+        </NuxtLink>
+        <h1>Users Management (SSR)</h1>
       </div>
-      <button @click="showCreateModal = true" class="btn btn-primary">
-        Add New User
-      </button>
+      <div class="header-actions">
+        <button @click="showCreateModal = true" class="btn btn-primary">
+          Add New User
+        </button>
+        <button @click="refresh()" :disabled="pending" class="btn btn-secondary">
+          {{ pending ? 'Refreshing...' : 'Refresh' }}
+        </button>
+      </div>
     </div>
 
     <!-- Users List -->
     <div class="users-section">
-      <ClientOnly>
-        <div v-if="pending" class="loading">
-          <div class="loading-spinner"></div>
-          <p>Loading users...</p>
-        </div>
+      <div v-if="pending" class="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading users...</p>
+      </div>
 
-        <div v-else-if="error" class="error">
-          <h3>Failed to load users</h3>
-          <p>{{ error?.message || error || "An unexpected error occurred" }}</p>
-          <button @click="refresh()" class="btn btn-primary retry-btn">
-            Try Again
-          </button>
-        </div>
+      <div v-else-if="error" class="error">
+        <h3>Failed to load users</h3>
+        <p>{{ error?.message || error || 'An unexpected error occurred' }}</p>
+        <button @click="refresh()" class="btn btn-primary retry-btn">
+          Try Again
+        </button>
+      </div>
 
-        <div v-else-if="!users?.data?.users?.length" class="empty-state">
-          <h3>No users found</h3>
-          <p>Get started by creating your first user.</p>
-          <button @click="showCreateModal = true" class="btn btn-primary">
-            Create First User
-          </button>
-        </div>
+      <div v-else-if="!users?.data?.users?.length" class="empty-state">
+        <h3>No users found</h3>
+        <p>Get started by creating your first user.</p>
+        <button @click="showCreateModal = true" class="btn btn-primary">
+          Create First User
+        </button>
+      </div>
 
-        <div v-else>
-          <div class="users-stats">
-            <p>Total Users: {{ users?.data?.total || 0 }}</p>
+      <div v-else>
+        <div class="users-stats">
+          <p>Total Users: {{ users?.data?.total || 0 }}</p>
+          <div class="ssr-badge">
+            🚀 Server-Side Rendered
           </div>
+        </div>
 
-          <div class="users-grid">
-            <div
-              v-for="user in users?.data?.users"
-              :key="user.id"
-              class="user-card"
-            >
-              <div class="user-info">
-                <h3>{{ user.name }}</h3>
-                <p class="email">{{ user.email }}</p>
-                <div class="details">
-                  <span v-if="user.age">Age: {{ user.age }}</span>
-                  <span v-if="user.phone">Phone: {{ user.phone }}</span>
-                </div>
-                <p class="created-at">
-                  <ClientOnly>
-                    Created: {{ formatDate(user.created_at) }}
-                    <template #fallback>
-                      Created: {{ user.created_at.split("T")[0] }}
-                    </template>
-                  </ClientOnly>
-                </p>
+        <div class="users-grid">
+          <div
+            v-for="user in users?.data?.users"
+            :key="user.id"
+            class="user-card"
+          >
+            <div class="user-info">
+              <h3>{{ user.name }}</h3>
+              <p class="email">{{ user.email }}</p>
+              <div class="details">
+                <span v-if="user.age">Age: {{ user.age }}</span>
+                <span v-if="user.phone">Phone: {{ user.phone }}</span>
               </div>
-              <div class="user-actions">
-                <button @click="editUser(user)" class="btn btn-secondary">
-                  Edit
-                </button>
-                <button @click="deleteUser(user.id)" class="btn btn-danger">
-                  Delete
-                </button>
-              </div>
+              <p class="created-at">
+                Created: {{ formatDate(user.created_at) }}
+              </p>
+            </div>
+            <div class="user-actions">
+              <button @click="editUser(user)" class="btn btn-secondary">
+                Edit
+              </button>
+              <button @click="deleteUser(user.id)" class="btn btn-danger">
+                Delete
+              </button>
             </div>
           </div>
-
-          <!-- Pagination -->
-          <div v-if="users?.data && users.data.total > 10" class="pagination">
-            <button
-              @click="loadPage(currentPage - 1)"
-              :disabled="currentPage <= 1"
-              class="btn"
-            >
-              Previous
-            </button>
-            <span>Page {{ currentPage }}</span>
-            <button
-              @click="loadPage(currentPage + 1)"
-              :disabled="users?.data && currentPage * 10 >= users.data.total"
-              class="btn"
-            >
-              Next
-            </button>
-          </div>
         </div>
 
-        <template #fallback>
-          <div class="loading">Loading users...</div>
-        </template>
-      </ClientOnly>
+        <!-- Pagination -->
+        <div v-if="users?.data && users.data.total > 10" class="pagination">
+          <button
+            @click="loadPage(currentPage - 1)"
+            :disabled="currentPage <= 1 || pending"
+            class="btn"
+          >
+            Previous
+          </button>
+          <span class="page-info">Page {{ currentPage }}</span>
+          <button
+            @click="loadPage(currentPage + 1)"
+            :disabled="users?.data && currentPage * 10 >= users.data.total || pending"
+            class="btn"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Create/Edit User Modal -->
@@ -208,17 +205,13 @@ interface UserForm {
 
 // Set page metadata
 useHead({
-  title: "Users Management",
+  title: "Users Management (SSR)",
 });
 
-// Global loader
-const globalLoader = useGlobalLoader();
-
-// Navigation with loader
-const navigateToHome = async () => {
-  globalLoader.showLoader("Loading Home...");
-  await navigateTo("/");
-};
+// Enable SSR for this page (this is the default behavior)
+definePageMeta({
+  ssr: true,
+});
 
 // Reactive state
 const showCreateModal = ref(false);
@@ -236,14 +229,14 @@ const userForm = ref<UserForm>({
   phone: "",
 });
 
-// Fetch users with pagination
+// Fetch users with pagination - SSR enabled
 const {
   data: users,
   pending,
   error,
   refresh,
-} = await useLazyFetch<ApiResponse>("/api/users", {
-  key: "users-list", // Add unique key for caching
+} = await useFetch<ApiResponse>("/api/users", {
+  key: 'users-list-ssr',
   query: {
     limit,
     offset: computed(() => (currentPage.value - 1) * limit),
@@ -257,9 +250,9 @@ const {
       total: 0,
     },
   }),
-  server: false, // Force client-side only since SSR is disabled
+  // SSR is enabled by default for useFetch
+  server: true,
   transform: (data: any) => {
-    // Transform and validate the response
     return {
       success: data?.success || false,
       data: {
@@ -275,7 +268,6 @@ const {
 // Helper functions
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
-  // Use a consistent format that works the same on server and client
   return date.toLocaleDateString("en-US", {
     year: "numeric",
     month: "2-digit",
@@ -332,7 +324,7 @@ const submitUser = async () => {
     await refresh();
     closeModal();
   } catch (err: any) {
-    console.error("Submit user error:", err);
+    console.error('Submit user error:', err);
     formError.value = err?.data?.error || err?.message || "An error occurred";
   } finally {
     submitting.value = false;
@@ -344,49 +336,24 @@ const deleteUser = async (userId: number) => {
     return;
   }
 
-  // Show loading state
-  const originalUsers = users.value?.data?.users || [];
-
   try {
-    // Optimistic update - remove from UI immediately
-    if (users.value?.data?.users) {
-      users.value.data.users = users.value.data.users.filter(
-        (u) => u.id !== userId
-      );
-      users.value.data.total = Math.max(0, users.value.data.total - 1);
-    }
-
     await $fetch("/api/users", {
       method: "DELETE",
       query: { id: userId },
     });
 
-    // Refresh to ensure data consistency
+    // Refresh the users list
     await refresh();
   } catch (err: any) {
-    console.error("Delete user error:", err);
-
-    // Revert optimistic update on error
-    if (users.value?.data) {
-      users.value.data.users = originalUsers;
-      users.value.data.total = originalUsers.length;
-    }
-
-    alert(
-      "Error deleting user: " +
-        (err.data?.error || err.message || "Unknown error")
-    );
+    console.error('Delete user error:', err);
+    alert("Error deleting user: " + (err.data?.error || err.message || "Unknown error"));
   }
 };
 
 const loadPage = async (page: number) => {
-  if (page === currentPage.value || page < 1) return;
-
-  // Show loading immediately
+  if (page === currentPage.value || page < 1 || pending.value) return;
+  
   currentPage.value = page;
-
-  // The useLazyFetch will automatically refetch when currentPage changes
-  // due to the computed offset parameter
 };
 </script>
 
@@ -404,12 +371,20 @@ const loadPage = async (page: number) => {
   margin-bottom: 2rem;
   padding-bottom: 1rem;
   border-bottom: 2px solid #e5e7eb;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .header-left {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .back-btn {
@@ -431,6 +406,7 @@ const loadPage = async (page: number) => {
   text-decoration: none;
   display: inline-block;
   transition: all 0.2s;
+  font-size: 0.875rem;
 }
 
 .btn:disabled {
@@ -490,12 +466,8 @@ const loadPage = async (page: number) => {
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .error {
@@ -527,8 +499,27 @@ const loadPage = async (page: number) => {
 }
 
 .users-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.users-stats p {
+  margin: 0;
   color: #6b7280;
+}
+
+.ssr-badge {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
 }
 
 .users-grid {
@@ -594,6 +585,11 @@ const loadPage = async (page: number) => {
   align-items: center;
   gap: 1rem;
   margin-top: 2rem;
+}
+
+.page-info {
+  font-weight: 500;
+  color: #374151;
 }
 
 .modal-overlay {
@@ -693,5 +689,26 @@ const loadPage = async (page: number) => {
   gap: 0.5rem;
   justify-content: flex-end;
   margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .header-actions {
+    justify-content: center;
+  }
+  
+  .users-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .users-stats {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
 }
 </style>
