@@ -15,10 +15,25 @@
     <!-- Users List -->
     <div class="users-section">
       <ClientOnly>
-        <div v-if="pending" class="loading">Loading users...</div>
+        <div v-if="pending" class="loading">
+          <div class="loading-spinner"></div>
+          <p>Loading users...</p>
+        </div>
 
         <div v-else-if="error" class="error">
-          Error loading users: {{ error }}
+          <h3>Failed to load users</h3>
+          <p>{{ error?.message || error || "An unexpected error occurred" }}</p>
+          <button @click="refresh()" class="btn btn-primary retry-btn">
+            Try Again
+          </button>
+        </div>
+
+        <div v-else-if="!users?.data?.users?.length" class="empty-state">
+          <h3>No users found</h3>
+          <p>Get started by creating your first user.</p>
+          <button @click="showCreateModal = true" class="btn btn-primary">
+            Create First User
+          </button>
         </div>
 
         <div v-else>
@@ -227,7 +242,8 @@ const {
   pending,
   error,
   refresh,
-} = await useFetch<ApiResponse>("/api/users", {
+} = await useLazyFetch<ApiResponse>("/api/users", {
+  key: "users-list", // Add unique key for caching
   query: {
     limit,
     offset: computed(() => (currentPage.value - 1) * limit),
@@ -241,6 +257,19 @@ const {
       total: 0,
     },
   }),
+  server: false, // Force client-side only since SSR is disabled
+  transform: (data: any) => {
+    // Transform and validate the response
+    return {
+      success: data?.success || false,
+      data: {
+        users: data?.data?.users || [],
+        total: data?.data?.total || 0,
+      },
+      message: data?.message,
+      error: data?.error,
+    };
+  },
 });
 
 // Helper functions
@@ -287,13 +316,13 @@ const submitUser = async () => {
   try {
     if (editingUser.value) {
       // Update existing user
-      const { data } = await $fetch(`/api/users/${editingUser.value.id}`, {
+      await $fetch(`/api/users/${editingUser.value.id}`, {
         method: "PUT",
         body: userForm.value,
       });
     } else {
       // Create new user
-      const { data } = await $fetch("/api/users", {
+      await $fetch("/api/users", {
         method: "POST",
         body: userForm.value,
       });
@@ -303,7 +332,8 @@ const submitUser = async () => {
     await refresh();
     closeModal();
   } catch (err: any) {
-    formError.value = err.data?.error || "An error occurred";
+    console.error('Submit user error:', err);
+    formError.value = err?.data?.error || err?.message || "An error occurred";
   } finally {
     submitting.value = false;
   }
@@ -314,21 +344,44 @@ const deleteUser = async (userId: number) => {
     return;
   }
 
+  // Show loading state
+  const originalUsers = users.value?.data?.users || [];
+  
   try {
+    // Optimistic update - remove from UI immediately
+    if (users.value?.data?.users) {
+      users.value.data.users = users.value.data.users.filter(u => u.id !== userId);
+      users.value.data.total = Math.max(0, users.value.data.total - 1);
+    }
+
     await $fetch("/api/users", {
       method: "DELETE",
       query: { id: userId },
     });
 
-    // Refresh the users list
+    // Refresh to ensure data consistency
     await refresh();
   } catch (err: any) {
-    alert("Error deleting user: " + (err.data?.error || "Unknown error"));
+    console.error('Delete user error:', err);
+    
+    // Revert optimistic update on error
+    if (users.value?.data) {
+      users.value.data.users = originalUsers;
+      users.value.data.total = originalUsers.length;
+    }
+    
+    alert("Error deleting user: " + (err.data?.error || err.message || "Unknown error"));
   }
 };
 
-const loadPage = (page: number) => {
+const loadPage = async (page: number) => {
+  if (page === currentPage.value || page < 1) return;
+  
+  // Show loading immediately
   currentPage.value = page;
+  
+  // The useLazyFetch will automatically refetch when currentPage changes
+  // due to the computed offset parameter
 };
 </script>
 
@@ -408,14 +461,60 @@ const loadPage = (page: number) => {
 }
 
 .loading,
-.error {
+.error,
+.empty-state {
   text-align: center;
   padding: 2rem;
   font-size: 1.1rem;
 }
 
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .error {
   color: #ef4444;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+}
+
+.error h3 {
+  margin: 0 0 0.5rem 0;
+  color: #dc2626;
+}
+
+.retry-btn {
+  margin-top: 1rem;
+}
+
+.empty-state {
+  color: #6b7280;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+.empty-state h3 {
+  margin: 0 0 0.5rem 0;
+  color: #374151;
 }
 
 .users-stats {

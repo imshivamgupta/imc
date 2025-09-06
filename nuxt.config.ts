@@ -5,6 +5,18 @@ export default defineNuxtConfig({
 
   modules: ["@nuxt/scripts", "@nuxt/image", "@nuxt/eslint", "@nuxt/fonts"],
 
+  // Option A: Disable SSR globally
+  // ssr: false,
+
+  // Option B: Disable SSR for specific routes
+  nitro: {
+    routeRules: {
+      "/users": { ssr: false }, // Disable SSR for users page
+      // '/admin/**': { ssr: false }, // Disable SSR for all admin routes
+      // '/dashboard/**': { ssr: false }, // Disable SSR for all dashboard routes
+    },
+  },
+
   app: {
     head: {
       title: "Users Management App",
