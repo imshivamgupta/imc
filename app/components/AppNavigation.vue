@@ -49,7 +49,7 @@
           <NavigationMenuItem>
             <NavigationMenuLink as-child>
               <NuxtLink
-                to="/pages-test"
+                to="/pages"
                 class="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:text-accent-foreground focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50"
               >
                 Pages
@@ -193,7 +193,7 @@
                   <span>Users</span>
                 </NuxtLink>
                 <NuxtLink
-                  to="/pages-test"
+                  to="/pages"
                   class="flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
                 >
                   <FileText class="h-4 w-4" />

@@ -313,7 +313,7 @@ const deletePage = async () => {
     });
 
     showDeleteDialog.value = false;
-    router.push("/pages-test");
+    router.push("/pages");
   } catch (error) {
     console.error("Error deleting page:", error);
     alert("Failed to delete page: " + error.message);

@@ -378,7 +378,7 @@ const previewPage = () => {
 };
 
 const navigateToPages = () => {
-  router.push("/pages-test");
+  router.push("/pages");
 };
 
 // Auto-generate slug from title

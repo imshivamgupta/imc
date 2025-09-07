@@ -27,15 +27,33 @@ export default defineNuxtConfig({
   nitro: {
     preset: process.env.NITRO_PRESET || "node-server",
     routeRules: {
-      "/users": { ssr: false }, // Disable SSR for users page
-      "/pages-test": { ssr: false }, // Disable SSR for pages-test
-      // For GitHub Pages static deployment, prerender main routes
+      // Static pages that can be prerendered
       "/": { prerender: true },
-      "/auth/**": { ssr: false },
-      "/pages/**": { ssr: false },
-      "/profile": { ssr: false },
-      "/create-page": { ssr: false },
-      "/edit-page/**": { ssr: false },
+
+      // Dynamic/API-dependent pages - disable SSR and prerendering
+      "/users": { ssr: false, prerender: false },
+      "/users-ssr": { ssr: false, prerender: false },
+      "/pages": { ssr: false, prerender: false },
+      "/pages-test": { ssr: false, prerender: false },
+      "/posts": { ssr: false, prerender: false },
+      "/profile": { ssr: false, prerender: false },
+      "/create-page": { ssr: false, prerender: false },
+
+      // Auth pages
+      "/auth/**": { ssr: false, prerender: false },
+
+      // Dynamic routes
+      "/pages/**": { ssr: false, prerender: false },
+      "/edit-page/**": { ssr: false, prerender: false },
+
+      // API routes (for static generation, these won't work)
+      "/api/**": { prerender: false },
+    },
+    prerender: {
+      // Only prerender specific routes to avoid 404s
+      routes: ["/"],
+      // Ignore routes that cause 404s during build
+      ignore: ["/terms", "/api/**", "/privacy"],
     },
   },
 
