@@ -6,6 +6,11 @@ export interface User extends Record<string, unknown> {
   age?: number;
   phone?: string;
   image_path?: string;
+  password_hash?: string;
+  email_verified: boolean;
+  reset_token?: string;
+  reset_token_expires?: Date;
+  last_login?: Date;
   created_at: Date;
 }
 
@@ -23,6 +28,70 @@ export interface UpdateUserRequest {
   age?: number;
   phone?: string;
   image_path?: string;
+}
+
+// Authentication interfaces
+export interface RegisterRequest {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  age?: number;
+  phone?: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  user: PublicUser;
+  token: string;
+  refreshToken: string;
+}
+
+export interface PublicUser {
+  id: number;
+  name: string;
+  email: string;
+  age?: number;
+  phone?: string;
+  image_path?: string;
+  email_verified: boolean;
+  last_login?: Date;
+  created_at: Date;
+}
+
+export interface RefreshToken extends Record<string, unknown> {
+  id: number;
+  user_id: number;
+  token: string;
+  expires_at: Date;
+  created_at: Date;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+}
+
+export interface ConfirmResetPasswordRequest {
+  token: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface JWTPayload {
+  userId: number;
+  email: string;
+  iat?: number;
+  exp?: number;
 }
 
 // API Response interfaces

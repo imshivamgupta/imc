@@ -34,6 +34,29 @@ const migrations = [
       ADD COLUMN IF NOT EXISTS image_path VARCHAR(255);
     `,
   },
+  {
+    name: "add_auth_columns_to_users",
+    sql: `
+      ALTER TABLE users 
+      ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255),
+      ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE,
+      ADD COLUMN IF NOT EXISTS reset_token VARCHAR(255),
+      ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMP,
+      ADD COLUMN IF NOT EXISTS last_login TIMESTAMP;
+    `,
+  },
+  {
+    name: "create_refresh_tokens_table",
+    sql: `
+      CREATE TABLE IF NOT EXISTS refresh_tokens (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        token VARCHAR(255) NOT NULL,
+        expires_at TIMESTAMP NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `,
+  },
 ];
 
 export default defineEventHandler(async (event) => {
