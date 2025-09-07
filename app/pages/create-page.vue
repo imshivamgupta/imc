@@ -244,7 +244,7 @@ import {
 
 // Composables
 const router = useRouter();
-const { isAuthenticated } = useAuth();
+const { isAuthenticated, token } = useAuth();
 
 // Base URL for preview
 const baseUrl = "http://localhost:3000";
@@ -315,7 +315,7 @@ const checkSlugAvailability = async (slug) => {
     const response = await $fetch(`/api/pages/${slug}`, {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${await getToken()}`,
+        ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
       },
     });
 
@@ -331,12 +331,6 @@ const checkSlugAvailability = async (slug) => {
   }
 };
 
-const getToken = async () => {
-  // This should get the token from your auth composable
-  // Adjust based on your auth implementation
-  return localStorage.getItem("auth_token") || "";
-};
-
 const createPage = async () => {
   if (!canSubmit.value) return;
 
@@ -347,7 +341,7 @@ const createPage = async () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${await getToken()}`,
+        Authorization: `Bearer ${token.value}`,
       },
       body: JSON.stringify(pageForm.value),
     });

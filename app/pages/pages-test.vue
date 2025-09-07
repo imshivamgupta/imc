@@ -200,7 +200,7 @@
             <h3 class="text-lg font-semibold">{{ page.title }}</h3>
             <div class="flex gap-2">
               <a
-                :href="`/page/${page.slug}`"
+                :href="`/pages/${page.slug}`"
                 class="text-blue-500 hover:underline text-sm"
                 >View</a
               >

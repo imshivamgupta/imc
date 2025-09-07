@@ -16,13 +16,13 @@
     </Alert>
 
     <!-- Edit Form -->
-    <div v-else-if="originalPage">
+    <div v-else-if="page">
       <!-- Header -->
       <div class="flex items-center justify-between mb-8">
         <div>
           <h1 class="text-3xl font-bold tracking-tight">Edit Page</h1>
           <p class="text-muted-foreground mt-2">
-            Make changes to "{{ originalPage.title }}"
+            Make changes to "{{ page.title }}"
           </p>
         </div>
         <div class="flex gap-2">
@@ -49,21 +49,15 @@
             creation.
           </CardDescription>
         </CardHeader>
-
-        <CardContent class="space-y-6">
+        <CardContent>
           <form @submit.prevent="updatePage" class="space-y-6">
-            <!-- Slug (Read-only) and Title Row -->
+            <!-- Slug and Title -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
-                <Label for="slug">Page Slug</Label>
-                <Input
-                  id="slug"
-                  :value="originalPage.slug"
-                  disabled
-                  class="bg-muted"
-                />
+                <Label for="slug">Slug (URL)</Label>
+                <Input id="slug" :value="page.slug" disabled class="bg-muted" />
                 <p class="text-sm text-muted-foreground">
-                  URL: {{ baseUrl }}/pages/{{ originalPage.slug }}
+                  URL: /pages/{{ page.slug }}
                 </p>
               </div>
 
@@ -111,11 +105,8 @@
                     id="is_public"
                     v-model:checked="pageForm.is_public"
                   />
-                  <Label
-                    for="is_public"
-                    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Make this page public
+                  <Label for="is_public" class="text-sm font-normal">
+                    Make this page publicly visible
                   </Label>
                 </div>
                 <p class="text-sm text-muted-foreground mt-2">
@@ -128,45 +119,43 @@
               </CardContent>
             </Card>
 
-            <!-- Change Summary -->
+            <!-- Changes Summary -->
             <Card v-if="hasChanges">
               <CardHeader class="pb-3">
-                <CardTitle class="text-base text-orange-600"
-                  >Pending Changes</CardTitle
-                >
+                <CardTitle class="text-base text-amber-600">
+                  Pending Changes
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <ul class="text-sm space-y-1">
+                <ul class="space-y-2 text-sm">
                   <li
-                    v-if="pageForm.title !== originalPage.title"
+                    v-if="pageForm.title !== page.title"
                     class="flex items-center gap-2"
                   >
                     <Badge variant="outline" class="text-xs">Title</Badge>
-                    {{ originalPage.title }} → {{ pageForm.title }}
+                    {{ page.title }} → {{ pageForm.title }}
                   </li>
                   <li
-                    v-if="
-                      pageForm.description !== (originalPage.description || '')
-                    "
+                    v-if="pageForm.description !== (page.description || '')"
                     class="flex items-center gap-2"
                   >
                     <Badge variant="outline" class="text-xs">Description</Badge>
-                    {{ originalPage.description || "(empty)" }} →
+                    {{ page.description || "(empty)" }} →
                     {{ pageForm.description || "(empty)" }}
                   </li>
                   <li
-                    v-if="pageForm.content !== originalPage.content"
+                    v-if="pageForm.content !== page.content"
                     class="flex items-center gap-2"
                   >
                     <Badge variant="outline" class="text-xs">Content</Badge>
                     Content has been modified
                   </li>
                   <li
-                    v-if="pageForm.is_public !== originalPage.is_public"
+                    v-if="pageForm.is_public !== page.is_public"
                     class="flex items-center gap-2"
                   >
                     <Badge variant="outline" class="text-xs">Visibility</Badge>
-                    {{ originalPage.is_public ? "Public" : "Private" }} →
+                    {{ page.is_public ? "Public" : "Private" }} →
                     {{ pageForm.is_public ? "Public" : "Private" }}
                   </li>
                 </ul>
@@ -236,8 +225,9 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { useAuth } from "@/composables/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -270,93 +260,93 @@ import {
   Loader2,
 } from "lucide-vue-next";
 
-// Router
+// Router and auth
 const router = useRouter();
 const route = useRoute();
+const { token } = useAuth();
 
-// Base URL for preview
-const baseUrl = "http://localhost:3000";
+// State
+const isSubmitting = ref(false);
+const showPreview = ref(false);
 
 // Get the slug from the route
 const slug = computed(() => route.params.slug);
 
-// UI state
-const isSubmitting = ref(false);
-const showPreview = ref(false);
+// Fetch page data for editing
+const {
+  data: pageResponse,
+  pending,
+  error,
+  refresh,
+} = await useFetch(`/api/pages/${slug.value}`, {
+  headers: computed(() => ({
+    ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
+  })),
+  server: false, // Disable SSR for this fetch to avoid hydration issues
+});
+
+// Extract the actual page data from the API response
+const page = computed(() => pageResponse.value?.data || null);
 
 // Form data
 const pageForm = ref({
   title: "",
   content: "",
   description: "",
-  is_public: true,
+  is_public: false,
 });
 
-// Fetch page data
-const {
-  data: originalPage,
-  pending,
-  error,
-} = await useFetch(`/api/pages/${slug.value}`, {
-  headers: {
-    Authorization: `Bearer ${getToken()}`,
-  },
-});
-
-// Initialize form when data loads
+// Initialize form when page data is loaded
 watch(
-  originalPage,
-  (page) => {
-    if (page) {
+  page,
+  (newPage) => {
+    if (newPage) {
       pageForm.value = {
-        title: page.title,
-        content: page.content,
-        description: page.description || "",
-        is_public: page.is_public,
+        title: newPage.title || "",
+        content: newPage.content || "",
+        description: newPage.description || "",
+        is_public: newPage.is_public || false,
       };
     }
   },
   { immediate: true }
 );
 
-// Computed
+// Check if form has changes
 const hasChanges = computed(() => {
-  if (!originalPage.value) return false;
+  if (!page.value) return false;
 
   return (
-    pageForm.value.title !== originalPage.value.title ||
-    pageForm.value.content !== originalPage.value.content ||
-    pageForm.value.description !== (originalPage.value.description || "") ||
-    pageForm.value.is_public !== originalPage.value.is_public
+    pageForm.value.title !== page.value.title ||
+    pageForm.value.content !== page.value.content ||
+    pageForm.value.description !== (page.value.description || "") ||
+    pageForm.value.is_public !== page.value.is_public
   );
 });
 
-// Helper functions
-const getToken = () => {
-  return localStorage.getItem("auth_token") || "";
-};
-
+// Functions
 const updatePage = async () => {
-  if (!hasChanges.value) return;
+  if (!page.value || !hasChanges.value) return;
 
   isSubmitting.value = true;
 
   try {
+    // Only send changed fields
     const updateData = {};
 
-    if (pageForm.value.title !== originalPage.value.title) {
+    if (pageForm.value.title !== page.value.title) {
       updateData.title = pageForm.value.title;
     }
 
-    if (pageForm.value.content !== originalPage.value.content) {
+    if (pageForm.value.content !== page.value.content) {
       updateData.content = pageForm.value.content;
     }
 
-    if (pageForm.value.description !== (originalPage.value.description || "")) {
+    if (pageForm.value.description !== (page.value.description || "")) {
       updateData.description = pageForm.value.description;
     }
 
-    if (pageForm.value.is_public !== originalPage.value.is_public) {
+    if (pageForm.value.is_public !== page.value.is_public) {
       updateData.is_public = pageForm.value.is_public;
     }
 
@@ -364,7 +354,7 @@ const updatePage = async () => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getToken()}`,
+        Authorization: `Bearer ${token.value}`,
       },
       body: JSON.stringify(updateData),
     });
@@ -384,12 +374,12 @@ const updatePage = async () => {
 };
 
 const resetForm = () => {
-  if (originalPage.value) {
+  if (page.value) {
     pageForm.value = {
-      title: originalPage.value.title,
-      content: originalPage.value.content,
-      description: originalPage.value.description || "",
-      is_public: originalPage.value.is_public,
+      title: page.value.title || "",
+      content: page.value.content || "",
+      description: page.value.description || "",
+      is_public: page.value.is_public || false,
     };
   }
 };
@@ -410,17 +400,22 @@ const goBack = () => {
 
 // Meta
 useHead({
-  title: () => `Edit: ${originalPage.value?.title || "Page"}`,
+  title: () => `Edit: ${page.value?.title || "Page"}`,
   meta: [{ name: "description", content: "Edit page content and settings" }],
 });
 
 // Warn before leaving if there are unsaved changes
 onBeforeUnmount(() => {
   if (hasChanges.value) {
-    window.addEventListener("beforeunload", (e) => {
+    const handleBeforeUnload = (e) => {
       e.preventDefault();
       e.returnValue = "";
-    });
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   }
 });
 </script>
@@ -428,17 +423,20 @@ onBeforeUnmount(() => {
 <style scoped>
 .prose {
   max-width: none;
+  line-height: 1.7;
 }
 
 .prose p {
-  margin-bottom: 1em;
+  margin-bottom: 1.2em;
 }
 
 .prose h1,
 .prose h2,
-.prose h3 {
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
+.prose h3,
+.prose h4 {
+  margin-top: 2em;
+  margin-bottom: 0.8em;
   font-weight: 600;
+  line-height: 1.2;
 }
 </style>

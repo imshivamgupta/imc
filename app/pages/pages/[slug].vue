@@ -45,14 +45,14 @@
           <div class="flex items-center gap-4 text-sm text-muted-foreground">
             <div class="flex items-center gap-1">
               <User class="h-4 w-4" />
-              {{ page.owner_name }}
+              {{ page.owner_name || "Unknown" }}
             </div>
-            <div class="flex items-center gap-1">
+            <div v-if="page.created_at" class="flex items-center gap-1">
               <Calendar class="h-4 w-4" />
               {{ formatDate(page.created_at) }}
             </div>
             <div
-              v-if="page.updated_at !== page.created_at"
+              v-if="page.updated_at && page.updated_at !== page.created_at"
               class="flex items-center gap-1"
             >
               <Clock class="h-4 w-4" />
@@ -104,8 +104,14 @@
       <Card>
         <CardContent class="p-8">
           <div class="prose prose-lg max-w-none">
-            <div class="whitespace-pre-wrap leading-relaxed">
+            <div
+              v-if="page.content"
+              class="whitespace-pre-wrap leading-relaxed"
+            >
               {{ page.content }}
+            </div>
+            <div v-else class="text-muted-foreground italic text-center py-8">
+              No content available for this page.
             </div>
           </div>
         </CardContent>
@@ -118,8 +124,8 @@
             class="flex items-center justify-between text-sm text-muted-foreground"
           >
             <div class="flex items-center gap-4">
-              <span>Page ID: {{ page.id }}</span>
-              <span>Slug: {{ page.slug }}</span>
+              <span>Page ID: {{ page.id || "N/A" }}</span>
+              <span>Slug: {{ page.slug || "N/A" }}</span>
             </div>
             <div class="flex items-center gap-2">
               <Button variant="ghost" size="sm" @click="copyPageUrl">
@@ -142,8 +148,8 @@
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Page</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete "{{ page?.title }}"? This action
-            cannot be undone.
+            Are you sure you want to delete "{{ page?.title || "this page" }}"?
+            This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -163,6 +169,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { useAuth } from "@/composables/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -206,35 +213,73 @@ import {
 const router = useRouter();
 const route = useRoute();
 
+// Auth
+const { token } = useAuth();
+
 // State
 const showDeleteDialog = ref(false);
 
 // Get the slug from the route
 const slug = computed(() => route.params.slug);
 
+// Debug logging
+console.log("🔍 Page component initialized");
+console.log("📝 Slug from route:", slug.value);
+console.log("🔑 Token available:", !!token.value);
+console.log("🔗 Token value (first 20 chars):", token.value?.substring(0, 20));
+
 // Fetch page data
 const {
-  data: page,
+  data: pageResponse,
   pending,
   error,
   refresh,
 } = await useFetch(`/api/pages/${slug.value}`, {
-  headers: {
-    Authorization: `Bearer ${getToken()}`,
+  headers: computed(() => ({
+    ...(token.value ? { Authorization: `Bearer ${token.value}` } : {}),
+  })),
+  server: false, // Disable SSR for this fetch to avoid hydration issues
+  onRequest({ request, options }) {
+    console.log("📡 Making request to:", request);
+    console.log("🔧 Request options:", options);
+  },
+  onResponse({ response }) {
+    console.log("📨 Response status:", response.status);
+    console.log("📊 Response data:", response._data);
+  },
+  onResponseError({ error }) {
+    console.log("❌ Response error:", error);
   },
 });
 
-// Helper functions
-const getToken = () => {
-  return localStorage.getItem("auth_token") || "";
-};
+// Extract the actual page data from the API response
+const page = computed(() => pageResponse.value?.data || null);
 
+// Watch for data changes
+watch(
+  [pageResponse, page, pending, error],
+  ([newResponse, newPage, newPending, newError]) => {
+    console.log("🔄 Data changed:");
+    console.log("📦 Raw response:", newResponse);
+    console.log("📄 Extracted page data:", newPage);
+    console.log("⏳ Pending:", newPending);
+    console.log("🚨 Error:", newError);
+  },
+  { immediate: true }
+);
+
+// Helper functions
 const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  if (!dateString) return "Date not available";
+  try {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  } catch (error) {
+    return "Invalid date";
+  }
 };
 
 const goBack = () => {
@@ -242,6 +287,10 @@ const goBack = () => {
 };
 
 const editPage = () => {
+  if (!page.value?.slug) {
+    alert("Page data not available");
+    return;
+  }
   router.push(`/edit-page/${page.value.slug}`);
 };
 
@@ -250,11 +299,16 @@ const confirmDelete = () => {
 };
 
 const deletePage = async () => {
+  if (!page.value?.slug) {
+    alert("Page data not available");
+    return;
+  }
+
   try {
     await $fetch(`/api/pages/${page.value.slug}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${getToken()}`,
+        Authorization: `Bearer ${token.value}`,
       },
     });
 
@@ -267,12 +321,17 @@ const deletePage = async () => {
 };
 
 const toggleVisibility = async () => {
+  if (!page.value?.slug) {
+    alert("Page data not available");
+    return;
+  }
+
   try {
     await $fetch(`/api/pages/${page.value.slug}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getToken()}`,
+        Authorization: `Bearer ${token.value}`,
       },
       body: JSON.stringify({
         is_public: !page.value.is_public,
@@ -288,6 +347,13 @@ const toggleVisibility = async () => {
 };
 
 const copyPageUrl = async () => {
+  if (!page.value?.slug) {
+    alert("Page data not available");
+    return;
+  }
+
+  if (typeof window === 'undefined') return; // SSR check
+  
   const url = `${window.location.origin}/pages/${page.value.slug}`;
   try {
     await navigator.clipboard.writeText(url);
@@ -300,11 +366,18 @@ const copyPageUrl = async () => {
 };
 
 const shareePage = () => {
+  if (!page.value?.slug) {
+    alert("Page data not available");
+    return;
+  }
+
+  if (typeof window === 'undefined') return; // SSR check
+  
   const url = `${window.location.origin}/pages/${page.value.slug}`;
   if (navigator.share) {
     navigator.share({
-      title: page.value.title,
-      text: page.value.description || page.value.title,
+      title: page.value.title || "Shared Page",
+      text: page.value.description || page.value.title || "Check out this page",
       url: url,
     });
   } else {
