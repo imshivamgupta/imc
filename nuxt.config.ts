@@ -27,7 +27,7 @@ export default defineNuxtConfig({
   ssr: false, // Always use SPA mode to avoid prerendering issues
 
   nitro: {
-    preset: process.env.NITRO_PRESET || "node-server",
+    preset: "github-pages",
     prerender: {
       routes: [], // No prerendering
       crawlLinks: false, // Don't follow links to discover routes
@@ -51,6 +51,7 @@ export default defineNuxtConfig({
     },
     // Base URL for GitHub Pages (will be set by GitHub Actions)
     baseURL: process.env.NUXT_APP_BASE_URL || "/imc",
+    buildAssetsDir: "_nuxt/",
   },
 
   // Environment variables for build
