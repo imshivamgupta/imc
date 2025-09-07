@@ -1,111 +1,399 @@
 <template>
-  <div class="home-page">
-    <section class="hero">
-      <div class="container">
-        <h1 class="hero-title">Welcome to Your App</h1>
-        <p class="hero-subtitle">
-          A modern full-stack application with authentication, user management,
-          and more.
-        </p>
-
-        <div v-if="!isAuthenticated" class="hero-actions">
-          <NuxtLink to="/auth/register" class="btn btn-primary">
-            Get Started
-          </NuxtLink>
-          <NuxtLink to="/auth/login" class="btn btn-secondary">
-            Sign In
-          </NuxtLink>
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <!-- Hero Section -->
+    <section
+      class="relative overflow-hidden bg-gradient-to-br from-purple-100 via-violet-50 to-indigo-100 min-h-[80vh]"
+    >
+      <!-- Curved Background Elements -->
+      <div class="absolute inset-0">
+        <!-- Main curved shape -->
+        <div class="absolute top-0 right-0 w-2/3 h-full curved-bg">
+          <svg
+            viewBox="0 0 100 100"
+            class="w-full h-full"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M30,0 C60,20 80,40 100,0 L100,100 L0,100 Z"
+              fill="url(#gradient1)"
+              opacity="0.8"
+            />
+            <defs>
+              <linearGradient
+                id="gradient1"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop
+                  offset="0%"
+                  style="stop-color: #8b5cf6; stop-opacity: 0.3"
+                />
+                <stop
+                  offset="100%"
+                  style="stop-color: #6366f1; stop-opacity: 0.5"
+                />
+              </linearGradient>
+            </defs>
+          </svg>
         </div>
 
-        <div v-else class="hero-welcome">
-          <h2>Welcome back, {{ user?.name }}! 👋</h2>
-          <NuxtLink to="/profile" class="btn btn-primary">
-            View Profile
-          </NuxtLink>
+        <!-- Secondary curved element -->
+        <div class="absolute top-1/4 right-1/4 w-1/2 h-1/2 curved-bg">
+          <svg
+            viewBox="0 0 100 100"
+            class="w-full h-full"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M20,0 C50,30 70,60 100,40 L100,100 L0,100 Z"
+              fill="url(#gradient2)"
+              opacity="0.4"
+            />
+            <defs>
+              <linearGradient
+                id="gradient2"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop
+                  offset="0%"
+                  style="stop-color: #a855f7; stop-opacity: 0.2"
+                />
+                <stop
+                  offset="100%"
+                  style="stop-color: #3b82f6; stop-opacity: 0.3"
+                />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+
+        <!-- Floating text elements -->
+        <div
+          class="absolute top-16 right-20 transform rotate-12 text-violet-400/30 font-medium text-sm hidden lg:block floating-element"
+        >
+          discover • explore • connect
+        </div>
+        <div
+          class="absolute bottom-32 right-32 transform -rotate-12 text-purple-400/30 font-medium text-sm hidden lg:block floating-element"
+        >
+          local businesses • social presence
+        </div>
+      </div>
+      <div
+        class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
+      >
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <!-- Content Side -->
+          <div class="space-y-8">
+            <!-- Badge -->
+            <Badge
+              variant="secondary"
+              class="w-fit bg-violet-100 text-violet-700 border-violet-200"
+            >
+              City Explorer & Business Solutions
+            </Badge>
+
+            <!-- Main Heading -->
+            <div class="space-y-4">
+              <h1
+                class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl"
+              >
+                Explore your city like
+                <span class="gradient-text text-transparent">
+                  never before.
+                </span>
+              </h1>
+
+              <p class="text-lg leading-relaxed text-gray-600 max-w-lg">
+                Discover amazing businesses, shops, restaurants, and malls in
+                your city. We also offer customized web presence pages to help
+                local businesses build their social presence and connect with
+                customers.
+              </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4">
+              <Button
+                size="lg"
+                class="bg-violet-600 hover:bg-violet-700 text-white px-8 py-3"
+                as-child
+              >
+                <NuxtLink to="/auth/register"> Get Started </NuxtLink>
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                class="border-violet-200 text-violet-700 hover:bg-violet-50 px-8 py-3"
+                as-child
+              >
+                <NuxtLink to="/users"> Explore Businesses </NuxtLink>
+              </Button>
+            </div>
+
+            <!-- Stats or Features Preview -->
+            <div class="grid grid-cols-3 gap-6 pt-8">
+              <div class="text-center">
+                <div class="text-2xl font-bold text-violet-600">500+</div>
+                <div class="text-sm text-gray-600">Local Businesses</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-purple-600">50+</div>
+                <div class="text-sm text-gray-600">Cities Covered</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-bold text-indigo-600">24/7</div>
+                <div class="text-sm text-gray-600">Support</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Image/Visual Side -->
+          <div class="relative lg:h-[600px] flex items-center justify-center">
+            <!-- Main circular background -->
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div
+                class="w-80 h-80 lg:w-96 lg:h-96 rounded-full bg-gradient-to-br from-violet-200 via-purple-200 to-indigo-200 opacity-50"
+              ></div>
+            </div>
+
+            <!-- Secondary circle -->
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div
+                class="w-64 h-64 lg:w-80 lg:h-80 rounded-full bg-gradient-to-br from-white to-violet-100 opacity-80"
+              ></div>
+            </div>
+
+            <!-- Placeholder for person/yoga image -->
+            <div
+              class="relative z-10 w-48 h-48 lg:w-64 lg:h-64 rounded-full bg-gradient-to-br from-violet-300 to-purple-400 flex items-center justify-center shadow-2xl hero-image"
+            >
+              <div class="text-4xl lg:text-6xl">🏙️</div>
+            </div>
+
+            <!-- Floating elements -->
+            <div
+              class="absolute top-1/4 left-1/4 w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center floating-element"
+            >
+              <span class="text-2xl">🏪</span>
+            </div>
+            <div
+              class="absolute bottom-1/3 right-1/4 w-12 h-12 bg-violet-100 rounded-full shadow-lg flex items-center justify-center floating-element"
+            >
+              <span class="text-xl">�️</span>
+            </div>
+            <div
+              class="absolute top-1/3 right-1/3 w-8 h-8 bg-purple-200 rounded-full shadow-md floating-element flex items-center justify-center"
+            >
+              <span class="text-sm">🛍️</span>
+            </div>
+            <div
+              class="absolute bottom-1/4 left-1/3 w-6 h-6 bg-indigo-200 rounded-full shadow-md floating-element"
+            ></div>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="features">
-      <div class="container">
-        <h2>Quick Navigation</h2>
-        <div class="nav-cards">
-          <NuxtLink to="/users" class="nav-card">
-            <div class="card-icon">👥</div>
-            <h3>Users Management</h3>
-            <p>
-              Create, edit, and manage users with profile images (Client-side)
-            </p>
-          </NuxtLink>
-
-          <NuxtLink
-            to="/users-ssr"
-            class="nav-card ssr-card"
-            @click="navigateToSSR"
+    <!-- Quick Navigation -->
+    <section class="py-16">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <h2
+            class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl"
           >
-            <div class="card-icon">🚀</div>
-            <h3>Users Management (SSR)</h3>
-            <p>Server-side rendered users page with image support</p>
-          </NuxtLink>
+            Explore & Connect
+          </h2>
+          <p class="mt-4 text-lg text-gray-600">
+            Discover local businesses and build your digital presence
+          </p>
+        </div>
 
-          <NuxtLink to="/posts" class="nav-card posts-card">
-            <div class="card-icon">📝</div>
-            <h3>Posts</h3>
-            <p>Browse posts from JSONPlaceholder API</p>
-          </NuxtLink>
-
-          <NuxtLink
-            v-if="isAuthenticated"
-            to="/profile"
-            class="nav-card profile-card"
+        <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <Card
+            class="group cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+            as-child
           >
-            <div class="card-icon">👤</div>
-            <h3>Your Profile</h3>
-            <p>View and edit your profile information</p>
-          </NuxtLink>
+            <NuxtLink to="/users">
+              <CardHeader class="text-center">
+                <div
+                  class="mx-auto h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center text-2xl group-hover:bg-blue-200 transition-colors"
+                >
+                  🏪
+                </div>
+                <CardTitle class="text-lg">Local Businesses</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p class="text-sm text-gray-600 text-center">
+                  Discover amazing shops, restaurants, and services in your area
+                </p>
+              </CardContent>
+            </NuxtLink>
+          </Card>
+
+          <Card
+            class="group cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+            as-child
+          >
+            <NuxtLink to="/users-ssr" @click="navigateToSSR">
+              <CardHeader class="text-center">
+                <div
+                  class="mx-auto h-12 w-12 rounded-lg bg-orange-100 flex items-center justify-center text-2xl group-hover:bg-orange-200 transition-colors"
+                >
+                  �️
+                </div>
+                <CardTitle class="text-lg">Shopping Centers</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p class="text-sm text-gray-600 text-center">
+                  Explore malls, boutiques, and shopping destinations
+                </p>
+                <Badge variant="secondary" class="mt-2 mx-auto block w-fit"
+                  >Popular</Badge
+                >
+              </CardContent>
+            </NuxtLink>
+          </Card>
+
+          <Card
+            class="group cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+            as-child
+          >
+            <NuxtLink to="/posts">
+              <CardHeader class="text-center">
+                <div
+                  class="mx-auto h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center text-2xl group-hover:bg-green-200 transition-colors"
+                >
+                  🍽️
+                </div>
+                <CardTitle class="text-lg">Restaurants</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p class="text-sm text-gray-600 text-center">
+                  Find the best dining experiences and local cuisine
+                </p>
+              </CardContent>
+            </NuxtLink>
+          </Card>
+
+          <Card
+            class="group cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1"
+            as-child
+          >
+            <NuxtLink to="/auth/register">
+              <CardHeader class="text-center">
+                <div
+                  class="mx-auto h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center text-2xl group-hover:bg-purple-200 transition-colors"
+                >
+                  �
+                </div>
+                <CardTitle class="text-lg">Business Solutions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p class="text-sm text-gray-600 text-center">
+                  Get your business online with custom web presence pages
+                </p>
+                <Badge variant="outline" class="mt-2 mx-auto block w-fit"
+                  >For Business</Badge
+                >
+              </CardContent>
+            </NuxtLink>
+          </Card>
         </div>
       </div>
     </section>
 
-    <section class="app-features">
-      <div class="container">
-        <h2>App Features</h2>
-        <div class="features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">🔐</div>
-            <h3>Authentication</h3>
-            <p>
-              Secure user registration, login, and password management with JWT
-              tokens.
-            </p>
-          </div>
+    <!-- App Features -->
+    <section class="py-16 bg-white">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <h2
+            class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl"
+          >
+            Why Choose Our Platform
+          </h2>
+          <p class="mt-4 text-lg text-gray-600">
+            Everything you need to explore your city and grow your business
+          </p>
+        </div>
 
-          <div class="feature-card">
-            <div class="feature-icon">👤</div>
-            <h3>User Profiles</h3>
-            <p>
-              Complete user profile management with image uploads and personal
-              information.
-            </p>
-          </div>
+        <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <Card class="text-center">
+            <CardHeader>
+              <div
+                class="mx-auto h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center text-3xl mb-4"
+              >
+                �️
+              </div>
+              <CardTitle class="text-xl">City Explorer</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p class="text-gray-600">
+                Discover hidden gems, popular spots, and local favorites in your
+                city with our comprehensive directory.
+              </p>
+              <Badge variant="default" class="mt-3">Discovery</Badge>
+            </CardContent>
+          </Card>
 
-          <div class="feature-card">
-            <div class="feature-icon">📝</div>
-            <h3>Content Management</h3>
-            <p>
-              Create, edit, and manage posts and other content with full CRUD
-              operations.
-            </p>
-          </div>
+          <Card class="text-center">
+            <CardHeader>
+              <div
+                class="mx-auto h-16 w-16 rounded-full bg-green-100 flex items-center justify-center text-3xl mb-4"
+              >
+                🌐
+              </div>
+              <CardTitle class="text-xl">Social Presence</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p class="text-gray-600">
+                We create customized web presence pages for businesses to build
+                their social presence and connect with customers.
+              </p>
+              <Badge variant="default" class="mt-3">Web Presence</Badge>
+            </CardContent>
+          </Card>
 
-          <div class="feature-card">
-            <div class="feature-icon">🚀</div>
-            <h3>Modern Stack</h3>
-            <p>
-              Built with Nuxt 3, TypeScript, PostgreSQL, and modern development
-              practices.
-            </p>
-          </div>
+          <Card class="text-center">
+            <CardHeader>
+              <div
+                class="mx-auto h-16 w-16 rounded-full bg-purple-100 flex items-center justify-center text-3xl mb-4"
+              >
+                🤝
+              </div>
+              <CardTitle class="text-xl">Business Connect</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p class="text-gray-600">
+                Connect local businesses with their community through our
+                platform, fostering local economic growth.
+              </p>
+              <Badge variant="default" class="mt-3">Community</Badge>
+            </CardContent>
+          </Card>
+
+          <Card class="text-center">
+            <CardHeader>
+              <div
+                class="mx-auto h-16 w-16 rounded-full bg-orange-100 flex items-center justify-center text-3xl mb-4"
+              >
+                �
+              </div>
+              <CardTitle class="text-xl">Modern Platform</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p class="text-gray-600">
+                Built with cutting-edge technology to provide fast, reliable,
+                and user-friendly experiences across all devices.
+              </p>
+              <Badge variant="default" class="mt-3">Technology</Badge>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </section>
@@ -113,9 +401,16 @@
 </template>
 
 <script setup lang="ts">
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Badge } from "~/components/ui/badge";
+import { Separator } from "~/components/ui/separator";
+import { Alert, AlertDescription } from "~/components/ui/alert";
+import { Avatar, AvatarFallback } from "~/components/ui/avatar";
+
 // Set page metadata
 useHead({
-  title: "Home",
+  title: "City Explorer - Discover Local Businesses",
 });
 
 // Auth composable
@@ -139,228 +434,99 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.home-page {
-  min-height: calc(100vh - 64px);
+/* Custom styles for enhanced animations and effects */
+.group:hover .group-hover\:bg-blue-200 {
+  transition: background-color 0.2s ease;
 }
 
-.hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 4rem 0;
-  text-align: center;
+.group:hover .group-hover\:bg-orange-200 {
+  transition: background-color 0.2s ease;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
+.group:hover .group-hover\:bg-green-200 {
+  transition: background-color 0.2s ease;
 }
 
-.hero-title {
-  font-size: 3rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  line-height: 1.2;
+.group:hover .group-hover\:bg-purple-200 {
+  transition: background-color 0.2s ease;
 }
 
-.hero-subtitle {
-  font-size: 1.25rem;
-  margin-bottom: 2rem;
-  opacity: 0.9;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-top: 2rem;
-}
-
-.hero-welcome {
-  margin-top: 2rem;
-}
-
-.hero-welcome h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.btn {
-  display: inline-block;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s;
-  border: 2px solid transparent;
-}
-
-.btn-primary {
-  background: white;
-  color: #3b82f6;
-}
-
-.btn-primary:hover {
-  background: #f8fafc;
-  transform: translateY(-2px);
-}
-
-.btn-secondary {
-  background: transparent;
-  color: white;
-  border-color: white;
-}
-
-.btn-secondary:hover {
-  background: white;
-  color: #3b82f6;
-  transform: translateY(-2px);
-}
-
-.features {
-  padding: 4rem 0;
-  background: white;
-}
-
-.features h2 {
-  text-align: center;
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 3rem;
-  color: #1f2937;
-}
-
-.nav-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-}
-
-.nav-card {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  color: white;
-  padding: 2rem;
-  border-radius: 12px;
-  text-decoration: none;
-  transition: transform 0.3s, box-shadow 0.3s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.nav-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-}
-
-.posts-card {
-  background: linear-gradient(135deg, #10b981, #059669);
-}
-
-.ssr-card {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-}
-
-.profile-card {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-}
-
-.card-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.nav-card h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.nav-card p {
-  margin: 0;
-  opacity: 0.9;
-  font-size: 0.9rem;
-  line-height: 1.4;
-}
-
-.app-features {
-  padding: 4rem 0;
-  background: #f9fafb;
-}
-
-.app-features h2 {
-  text-align: center;
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 3rem;
-  color: #1f2937;
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-}
-
-.feature-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.feature-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-.feature-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.feature-card h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #1f2937;
-}
-
-.feature-card p {
-  color: #6b7280;
-  line-height: 1.6;
-}
-
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 2rem;
+/* Hero section animations */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
   }
-
-  .hero-subtitle {
-    font-size: 1rem;
+  50% {
+    transform: translateY(-10px) rotate(2deg);
   }
+}
 
-  .hero-actions {
-    flex-direction: column;
-    align-items: center;
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-  .btn {
-    width: 200px;
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
   }
+  50% {
+    opacity: 0.8;
+  }
+}
 
-  .features h2,
-  .app-features h2 {
-    font-size: 2rem;
-  }
+/* Apply animations */
+.hero-image {
+  animation: float 6s ease-in-out infinite;
+}
 
-  .nav-cards,
-  .features-grid {
-    grid-template-columns: 1fr;
+.floating-element {
+  animation: float 4s ease-in-out infinite;
+}
+
+.floating-element:nth-child(2) {
+  animation-delay: 1s;
+}
+
+.floating-element:nth-child(3) {
+  animation-delay: 2s;
+}
+
+.floating-element:nth-child(4) {
+  animation-delay: 3s;
+}
+
+/* Gradient text animation */
+.gradient-text {
+  background: linear-gradient(-45deg, #8b5cf6, #6366f1, #a855f7, #3b82f6);
+  background-size: 400% 400%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  animation: gradientShift 4s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
   }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Curved path animations */
+.curved-bg {
+  animation: pulse 8s ease-in-out infinite;
 }
 </style>

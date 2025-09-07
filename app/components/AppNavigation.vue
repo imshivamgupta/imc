@@ -1,121 +1,249 @@
 <template>
-  <nav class="navbar">
-    <div class="nav-container">
-      <NuxtLink to="/" class="nav-logo">
-        <h1>Your App</h1>
+  <nav
+    class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+  >
+    <div class="container mx-auto flex h-16 items-center justify-between px-4">
+      <!-- Logo -->
+      <NuxtLink to="/" class="flex items-center space-x-2">
+        <div
+          class="flex h-8 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground"
+        >
+          <span class="text-sm font-bold">IMC</span>
+        </div>
+        <span class="hidden font-bold sm:inline-block">InMyCity</span>
       </NuxtLink>
 
-      <div class="nav-menu">
-        <NuxtLink to="/" class="nav-link">Home</NuxtLink>
-        <NuxtLink to="/posts" class="nav-link">Posts</NuxtLink>
-        <NuxtLink to="/users" class="nav-link">Users</NuxtLink>
+      <!-- Desktop Navigation -->
+      <NavigationMenu class="hidden md:flex">
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuLink as-child>
+              <NuxtLink
+                to="/"
+                class="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
+              >
+                Home
+              </NuxtLink>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuLink as-child>
+              <NuxtLink
+                to="/posts"
+                class="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
+              >
+                Posts
+              </NuxtLink>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuLink as-child>
+              <NuxtLink
+                to="/users"
+                class="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
+              >
+                Users
+              </NuxtLink>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
 
-        <div v-if="isAuthenticated" class="nav-user">
-          <div class="user-dropdown" @click="toggleDropdown">
-            <div class="user-avatar">
-              <img
-                v-if="user?.image_path"
-                :src="user.image_path"
-                :alt="user.name"
-                class="avatar-img"
-              />
-              <div v-else class="avatar-placeholder">
-                {{ getUserInitials() }}
+      <!-- User Menu / Auth Buttons -->
+      <div class="flex items-center space-x-4">
+        <div
+          v-if="isAuthenticated"
+          class="hidden md:flex items-center space-x-2"
+        >
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button variant="ghost" class="relative h-10 w-10 rounded-full">
+                <Avatar class="h-10 w-10">
+                  <AvatarImage
+                    v-if="user?.image_path"
+                    :src="user.image_path"
+                    :alt="user?.name"
+                  />
+                  <AvatarFallback class="bg-primary text-primary-foreground">
+                    {{ getUserInitials() }}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent class="w-56" align="end" :side-offset="5">
+              <DropdownMenuLabel class="font-normal">
+                <div class="flex flex-col space-y-1">
+                  <p class="text-sm font-medium leading-none">
+                    {{ user?.name }}
+                  </p>
+                  <p class="text-xs leading-none text-muted-foreground">
+                    {{ user?.email }}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem as-child>
+                <NuxtLink to="/profile" class="w-full cursor-pointer">
+                  <User class="mr-2 h-4 w-4" />
+                  Profile
+                </NuxtLink>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                @click="handleLogout"
+                class="text-red-600 cursor-pointer"
+              >
+                <LogOut class="mr-2 h-4 w-4" />
+                Log out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <div v-else class="hidden md:flex items-center space-x-2">
+          <Button variant="ghost" as-child>
+            <NuxtLink to="/auth/login"> Log in </NuxtLink>
+          </Button>
+          <Button as-child>
+            <NuxtLink to="/auth/register"> Sign up </NuxtLink>
+          </Button>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <Sheet>
+          <SheetTrigger as-child>
+            <Button variant="ghost" class="md:hidden h-10 w-10 p-0">
+              <Menu class="h-5 w-5" />
+              <span class="sr-only">Toggle menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" class="w-[300px] sm:w-[400px]">
+            <SheetHeader>
+              <SheetTitle class="text-left">
+                <div class="flex items-center space-x-2">
+                  <div
+                    class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground"
+                  >
+                    <span class="text-sm font-bold">YA</span>
+                  </div>
+                  <span class="font-bold">Your App</span>
+                </div>
+              </SheetTitle>
+            </SheetHeader>
+
+            <div class="grid gap-4 py-6">
+              <!-- User Info (Mobile) -->
+              <div
+                v-if="isAuthenticated"
+                class="flex items-center space-x-3 p-4 border rounded-lg"
+              >
+                <Avatar class="h-12 w-12">
+                  <AvatarImage
+                    v-if="user?.image_path"
+                    :src="user.image_path"
+                    :alt="user?.name"
+                  />
+                  <AvatarFallback class="bg-primary text-primary-foreground">
+                    {{ getUserInitials() }}
+                  </AvatarFallback>
+                </Avatar>
+                <div class="flex flex-col">
+                  <p class="text-sm font-medium">{{ user?.name }}</p>
+                  <p class="text-xs text-muted-foreground">{{ user?.email }}</p>
+                </div>
+              </div>
+
+              <!-- Navigation Links -->
+              <nav class="grid gap-2">
+                <NuxtLink
+                  to="/"
+                  class="flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+                >
+                  <Home class="h-4 w-4" />
+                  <span>Home</span>
+                </NuxtLink>
+                <NuxtLink
+                  to="/posts"
+                  class="flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+                >
+                  <FileText class="h-4 w-4" />
+                  <span>Posts</span>
+                </NuxtLink>
+                <NuxtLink
+                  to="/users"
+                  class="flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+                >
+                  <Users class="h-4 w-4" />
+                  <span>Users</span>
+                </NuxtLink>
+
+                <Separator v-if="isAuthenticated" class="my-2" />
+
+                <NuxtLink
+                  v-if="isAuthenticated"
+                  to="/profile"
+                  class="flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+                >
+                  <User class="h-4 w-4" />
+                  <span>Profile</span>
+                </NuxtLink>
+                <button
+                  v-if="isAuthenticated"
+                  @click="handleLogout"
+                  class="flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground text-red-600"
+                >
+                  <LogOut class="h-4 w-4" />
+                  <span>Log out</span>
+                </button>
+              </nav>
+
+              <!-- Auth Buttons (Mobile) -->
+              <div v-if="!isAuthenticated" class="grid gap-2 pt-4">
+                <Button variant="outline" as-child class="w-full">
+                  <NuxtLink to="/auth/login"> Log in </NuxtLink>
+                </Button>
+                <Button as-child class="w-full">
+                  <NuxtLink to="/auth/register"> Sign up </NuxtLink>
+                </Button>
               </div>
             </div>
-            <span class="user-name">{{ user?.name }}</span>
-            <span class="dropdown-arrow">▼</span>
-          </div>
-
-          <div v-if="showDropdown" class="dropdown-menu" @click.stop>
-            <NuxtLink
-              to="/profile"
-              class="dropdown-item"
-              @click="closeDropdown"
-            >
-              👤 Profile
-            </NuxtLink>
-            <button @click="handleLogout" class="dropdown-item logout-btn">
-              🚪 Logout
-            </button>
-          </div>
-        </div>
-
-        <div v-else class="nav-auth">
-          <NuxtLink to="/auth/login" class="nav-link">Login</NuxtLink>
-          <NuxtLink to="/auth/register" class="nav-button">Sign Up</NuxtLink>
-        </div>
-      </div>
-
-      <!-- Mobile menu button -->
-      <button
-        class="mobile-menu-btn"
-        @click="toggleMobileMenu"
-        :class="{ active: showMobileMenu }"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-    </div>
-
-    <!-- Mobile menu -->
-    <div v-if="showMobileMenu" class="mobile-menu">
-      <NuxtLink to="/" class="mobile-link" @click="closeMobileMenu"
-        >Home</NuxtLink
-      >
-      <NuxtLink to="/posts" class="mobile-link" @click="closeMobileMenu"
-        >Posts</NuxtLink
-      >
-      <NuxtLink to="/users" class="mobile-link" @click="closeMobileMenu"
-        >Users</NuxtLink
-      >
-
-      <div v-if="isAuthenticated" class="mobile-user">
-        <div class="mobile-user-info">
-          <div class="user-avatar small">
-            <img
-              v-if="user?.image_path"
-              :src="user.image_path"
-              :alt="user.name"
-              class="avatar-img"
-            />
-            <div v-else class="avatar-placeholder">
-              {{ getUserInitials() }}
-            </div>
-          </div>
-          <span class="user-name">{{ user?.name }}</span>
-        </div>
-        <NuxtLink to="/profile" class="mobile-link" @click="closeMobileMenu">
-          👤 Profile
-        </NuxtLink>
-        <button @click="handleLogout" class="mobile-link logout-btn">
-          🚪 Logout
-        </button>
-      </div>
-
-      <div v-else class="mobile-auth">
-        <NuxtLink to="/auth/login" class="mobile-link" @click="closeMobileMenu">
-          Login
-        </NuxtLink>
-        <NuxtLink
-          to="/auth/register"
-          class="mobile-button"
-          @click="closeMobileMenu"
-        >
-          Sign Up
-        </NuxtLink>
+          </SheetContent>
+        </Sheet>
       </div>
     </div>
   </nav>
 </template>
 
 <script setup lang="ts">
-const { user, isAuthenticated, logout } = useAuth();
+import { Button } from "~/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "~/components/ui/navigation-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "~/components/ui/sheet";
+import { Separator } from "~/components/ui/separator";
+import { Menu, User, LogOut, Home, FileText, Users } from "lucide-vue-next";
 
-// Component state
-const showDropdown = ref(false);
-const showMobileMenu = ref(false);
+const { user, isAuthenticated, logout } = useAuth();
 
 // Helper functions
 const getUserInitials = () => {
@@ -128,284 +256,20 @@ const getUserInitials = () => {
     .slice(0, 2);
 };
 
-const toggleDropdown = () => {
-  showDropdown.value = !showDropdown.value;
-};
-
-const closeDropdown = () => {
-  showDropdown.value = false;
-};
-
-const toggleMobileMenu = () => {
-  showMobileMenu.value = !showMobileMenu.value;
-};
-
-const closeMobileMenu = () => {
-  showMobileMenu.value = false;
-};
-
 const handleLogout = async () => {
   await logout();
-  closeDropdown();
-  closeMobileMenu();
 };
-
-// Close dropdown when clicking outside
-onMounted(() => {
-  document.addEventListener("click", () => {
-    showDropdown.value = false;
-  });
-});
 </script>
 
 <style scoped>
-.navbar {
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
-  position: sticky;
-  top: 0;
-  z-index: 50;
+/* Custom styles for router-link-active state */
+.router-link-active {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
 }
 
-.nav-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 64px;
-}
-
-.nav-logo {
-  text-decoration: none;
-  color: #333;
-}
-
-.nav-logo h1 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #3b82f6;
-}
-
-.nav-menu {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-.nav-link {
-  text-decoration: none;
-  color: #374151;
-  font-weight: 500;
-  transition: color 0.2s;
-}
-
-.nav-link:hover {
-  color: #3b82f6;
-}
-
-.nav-link.router-link-active {
-  color: #3b82f6;
-}
-
-.nav-button {
-  background: #3b82f6;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.nav-button:hover {
-  background: #2563eb;
-}
-
-.nav-user {
-  position: relative;
-}
-
-.user-dropdown {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 6px;
-  transition: background-color 0.2s;
-}
-
-.user-dropdown:hover {
-  background: #f9fafb;
-}
-
-.user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  overflow: hidden;
-}
-
-.user-avatar.small {
-  width: 24px;
-  height: 24px;
-}
-
-.avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.avatar-placeholder {
-  width: 100%;
-  height: 100%;
-  background: #3b82f6;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.user-name {
-  font-weight: 500;
-  color: #374151;
-}
-
-.dropdown-arrow {
-  font-size: 0.75rem;
-  color: #9ca3af;
-  transition: transform 0.2s;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  min-width: 160px;
-  padding: 0.5rem 0;
-  margin-top: 0.5rem;
-}
-
-.dropdown-item {
-  display: block;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  text-decoration: none;
-  color: #374151;
-  font-size: 0.875rem;
-  border: none;
-  background: none;
-  text-align: left;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.dropdown-item:hover {
-  background: #f9fafb;
-}
-
-.logout-btn {
-  color: #dc2626;
-}
-
-.logout-btn:hover {
-  background: #fef2f2;
-}
-
-.mobile-menu-btn {
-  display: none;
-  flex-direction: column;
-  gap: 4px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-}
-
-.mobile-menu-btn span {
-  width: 24px;
-  height: 2px;
-  background: #374151;
-  transition: all 0.3s;
-}
-
-.mobile-menu-btn.active span:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-
-.mobile-menu-btn.active span:nth-child(2) {
-  opacity: 0;
-}
-
-.mobile-menu-btn.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(7px, -6px);
-}
-
-.mobile-menu {
-  display: none;
-  background: white;
-  border-top: 1px solid #e5e7eb;
-  padding: 1rem;
-}
-
-.mobile-link {
-  display: block;
-  padding: 0.75rem 0;
-  text-decoration: none;
-  color: #374151;
-  border-bottom: 1px solid #f3f4f6;
-  font-weight: 500;
-}
-
-.mobile-link:hover {
-  color: #3b82f6;
-}
-
-.mobile-link:last-child {
-  border-bottom: none;
-}
-
-.mobile-button {
-  display: block;
-  background: #3b82f6;
-  color: white;
-  padding: 0.75rem;
-  border-radius: 6px;
-  text-decoration: none;
-  text-align: center;
-  font-weight: 500;
-  margin-top: 0.5rem;
-}
-
-.mobile-user-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-@media (max-width: 768px) {
-  .nav-menu {
-    display: none;
-  }
-
-  .mobile-menu-btn {
-    display: flex;
-  }
-
-  .mobile-menu {
-    display: block;
-  }
+/* Ensure smooth transitions for mobile sheet */
+.transition-transform {
+  transition: transform 0.3s ease-in-out;
 }
 </style>

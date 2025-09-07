@@ -3,7 +3,25 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
-  modules: ["@nuxt/scripts", "@nuxt/image", "@nuxt/eslint", "@nuxt/fonts"],
+  modules: [
+    "@nuxt/scripts",
+    "@nuxt/image",
+    "@nuxt/eslint",
+    "@nuxt/fonts",
+    "@nuxtjs/tailwindcss",
+    "shadcn-nuxt",
+  ],
+  shadcn: {
+    /**
+     * Prefix for all the imported component
+     */
+    prefix: "",
+    /**
+     * Directory that the component lives in.
+     * @default "./components/ui"
+     */
+    componentDir: "./app/components/ui",
+  },
 
   // Option A: Disable SSR globally
   // ssr: false,
