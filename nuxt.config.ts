@@ -49,9 +49,15 @@ export default defineNuxtConfig({
         },
       ],
     },
-    // Base URL for GitHub Pages (will be set by GitHub Actions)
+    // Base URL for GitHub Pages - explicitly set for repository deployment
     baseURL: process.env.NUXT_APP_BASE_URL || "/imc/",
+    cdnURL: process.env.NUXT_APP_BASE_URL || "/imc/",
     buildAssetsDir: "_nuxt/",
+  },
+
+  // Vite configuration for proper asset handling
+  vite: {
+    base: process.env.NUXT_APP_BASE_URL || "/imc/",
   },
 
   // Environment variables for build

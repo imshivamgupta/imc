@@ -39,9 +39,6 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          # Automatically inject router.base to Nuxt config
-          static_site_generator: nuxt
 
       - name: Static HTML export with Nuxt
         run: npm run generate
@@ -49,6 +46,8 @@ jobs:
           # Environment variables for Nuxt 4.x
           NITRO_PRESET: github-pages
           NODE_ENV: production
+          # Explicitly set the base URL for GitHub Pages
+          NUXT_APP_BASE_URL: /imc/
           # Add your environment variables here
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
