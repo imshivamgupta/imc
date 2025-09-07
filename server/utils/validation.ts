@@ -6,6 +6,8 @@ import type {
   ResetPasswordRequest,
   ConfirmResetPasswordRequest,
   ChangePasswordRequest,
+  CreatePageRequest,
+  UpdatePageRequest,
   ValidationResult,
   ValidationError,
 } from "../types";
@@ -512,6 +514,179 @@ export const ValidationService = {
       errors.push({
         field: "newPassword",
         message: "New password must be different from current password",
+      });
+    }
+
+    return { isValid: errors.length === 0, errors };
+  },
+
+  /**
+   * Validate page creation data
+   */
+  validateCreatePage(data: unknown): ValidationResult {
+    const errors: ValidationError[] = [];
+
+    if (!data || typeof data !== "object") {
+      errors.push({ field: "body", message: "Request body is required" });
+      return { isValid: false, errors };
+    }
+
+    const page = data as CreatePageRequest;
+
+    // Validate slug
+    if (
+      !page.slug ||
+      typeof page.slug !== "string" ||
+      page.slug.trim().length === 0
+    ) {
+      errors.push({
+        field: "slug",
+        message: "Slug is required and must be a non-empty string",
+      });
+    } else if (page.slug.length > 255) {
+      errors.push({
+        field: "slug",
+        message: "Slug must be less than 255 characters",
+      });
+    } else if (!/^[a-z0-9-]+$/.test(page.slug)) {
+      errors.push({
+        field: "slug",
+        message:
+          "Slug must contain only lowercase letters, numbers, and hyphens",
+      });
+    }
+
+    // Validate title
+    if (
+      !page.title ||
+      typeof page.title !== "string" ||
+      page.title.trim().length === 0
+    ) {
+      errors.push({
+        field: "title",
+        message: "Title is required and must be a non-empty string",
+      });
+    } else if (page.title.length > 255) {
+      errors.push({
+        field: "title",
+        message: "Title must be less than 255 characters",
+      });
+    }
+
+    // Validate content
+    if (
+      !page.content ||
+      typeof page.content !== "string" ||
+      page.content.trim().length === 0
+    ) {
+      errors.push({
+        field: "content",
+        message: "Content is required and must be a non-empty string",
+      });
+    }
+
+    // Validate description (optional)
+    if (page.description !== undefined) {
+      if (typeof page.description !== "string") {
+        errors.push({
+          field: "description",
+          message: "Description must be a string",
+        });
+      } else if (page.description.length > 500) {
+        errors.push({
+          field: "description",
+          message: "Description must be less than 500 characters",
+        });
+      }
+    }
+
+    // Validate is_public (optional)
+    if (page.is_public !== undefined && typeof page.is_public !== "boolean") {
+      errors.push({
+        field: "is_public",
+        message: "is_public must be a boolean",
+      });
+    }
+
+    return { isValid: errors.length === 0, errors };
+  },
+
+  /**
+   * Validate page update data
+   */
+  validateUpdatePage(data: unknown): ValidationResult {
+    const errors: ValidationError[] = [];
+
+    if (!data || typeof data !== "object") {
+      errors.push({ field: "body", message: "Request body is required" });
+      return { isValid: false, errors };
+    }
+
+    const page = data as UpdatePageRequest;
+
+    // At least one field must be provided
+    if (
+      page.title === undefined &&
+      page.content === undefined &&
+      page.description === undefined &&
+      page.is_public === undefined
+    ) {
+      errors.push({
+        field: "body",
+        message:
+          "At least one field (title, content, description, or is_public) must be provided",
+      });
+      return { isValid: false, errors };
+    }
+
+    // Validate title if provided
+    if (page.title !== undefined) {
+      if (typeof page.title !== "string" || page.title.trim().length === 0) {
+        errors.push({
+          field: "title",
+          message: "Title must be a non-empty string",
+        });
+      } else if (page.title.length > 255) {
+        errors.push({
+          field: "title",
+          message: "Title must be less than 255 characters",
+        });
+      }
+    }
+
+    // Validate content if provided
+    if (page.content !== undefined) {
+      if (
+        typeof page.content !== "string" ||
+        page.content.trim().length === 0
+      ) {
+        errors.push({
+          field: "content",
+          message: "Content must be a non-empty string",
+        });
+      }
+    }
+
+    // Validate description if provided
+    if (page.description !== undefined) {
+      if (typeof page.description !== "string") {
+        errors.push({
+          field: "description",
+          message: "Description must be a string",
+        });
+      } else if (page.description.length > 500) {
+        errors.push({
+          field: "description",
+          message: "Description must be less than 500 characters",
+        });
+      }
+    }
+
+    // Validate is_public if provided
+    if (page.is_public !== undefined && typeof page.is_public !== "boolean") {
+      errors.push({
+        field: "is_public",
+        message: "is_public must be a boolean",
       });
     }
 

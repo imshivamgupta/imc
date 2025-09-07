@@ -137,3 +137,23 @@ export function getClientIP(event: any): string {
 
   return "unknown";
 }
+
+/**
+ * Authentication helper that returns a result object
+ */
+export async function authenticate(
+  event: any,
+  required: boolean = true
+): Promise<{ success: boolean; user?: PublicUser }> {
+  try {
+    if (required) {
+      const user = await requireAuth(event);
+      return { success: true, user };
+    } else {
+      const user = await optionalAuth(event);
+      return { success: !!user, user: user || undefined };
+    }
+  } catch {
+    return { success: false };
+  }
+}

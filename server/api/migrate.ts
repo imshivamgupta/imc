@@ -57,6 +57,41 @@ const migrations = [
       );
     `,
   },
+  {
+    name: "create_pages_table",
+    sql: `
+      CREATE TABLE IF NOT EXISTS pages (
+        id SERIAL PRIMARY KEY,
+        slug VARCHAR(255) UNIQUE NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        content TEXT NOT NULL,
+        description TEXT,
+        is_public BOOLEAN DEFAULT TRUE,
+        owner_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `,
+  },
+  {
+    name: "create_pages_updated_at_trigger",
+    sql: `
+      CREATE OR REPLACE FUNCTION update_updated_at_column()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        NEW.updated_at = CURRENT_TIMESTAMP;
+        RETURN NEW;
+      END;
+      $$ language 'plpgsql';
+
+      DROP TRIGGER IF EXISTS update_pages_updated_at ON pages;
+      
+      CREATE TRIGGER update_pages_updated_at
+        BEFORE UPDATE ON pages
+        FOR EACH ROW
+        EXECUTE FUNCTION update_updated_at_column();
+    `,
+  },
 ];
 
 export default defineEventHandler(async (event) => {

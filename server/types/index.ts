@@ -132,3 +132,36 @@ export interface ValidationResult {
   isValid: boolean;
   errors: ValidationError[];
 }
+
+// Page interfaces
+export interface Page extends Record<string, unknown> {
+  id: number;
+  slug: string; // unique parameter for accessing the page
+  title: string;
+  content: string;
+  description?: string;
+  is_public: boolean;
+  owner_id: number;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface CreatePageRequest {
+  slug: string;
+  title: string;
+  content: string;
+  description?: string;
+  is_public?: boolean;
+}
+
+export interface UpdatePageRequest {
+  title?: string;
+  content?: string;
+  description?: string;
+  is_public?: boolean;
+}
+
+export interface PageWithOwner extends Page {
+  owner_name: string;
+  owner_email: string;
+}

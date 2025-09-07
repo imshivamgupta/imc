@@ -46,6 +46,16 @@
               </NuxtLink>
             </NavigationMenuLink>
           </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuLink as-child>
+              <NuxtLink
+                to="/pages-test"
+                class="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50"
+              >
+                Pages
+              </NuxtLink>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
 
@@ -86,6 +96,12 @@
                 <NuxtLink to="/profile" class="w-full cursor-pointer">
                   <User class="mr-2 h-4 w-4" />
                   Profile
+                </NuxtLink>
+              </DropdownMenuItem>
+              <DropdownMenuItem as-child>
+                <NuxtLink to="/create-page" class="w-full cursor-pointer">
+                  <Plus class="mr-2 h-4 w-4" />
+                  Create Page
                 </NuxtLink>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -176,6 +192,20 @@
                   <Users class="h-4 w-4" />
                   <span>Users</span>
                 </NuxtLink>
+                <NuxtLink
+                  to="/pages-test"
+                  class="flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+                >
+                  <FileText class="h-4 w-4" />
+                  <span>Pages</span>
+                </NuxtLink>
+                <NuxtLink
+                  to="/create-page"
+                  class="flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+                >
+                  <Plus class="h-4 w-4" />
+                  <span>Create Page</span>
+                </NuxtLink>
 
                 <Separator v-if="isAuthenticated" class="my-2" />
 
@@ -241,7 +271,15 @@ import {
   SheetTrigger,
 } from "~/components/ui/sheet";
 import { Separator } from "~/components/ui/separator";
-import { Menu, User, LogOut, Home, FileText, Users } from "lucide-vue-next";
+import {
+  Menu,
+  User,
+  LogOut,
+  Home,
+  FileText,
+  Users,
+  Plus,
+} from "lucide-vue-next";
 
 const { user, isAuthenticated, logout } = useAuth();
 
