@@ -64,9 +64,25 @@ export default defineEventHandler(async (event) => {
             offset,
           });
 
+          // Add can_edit field based on current user
+          let currentUserId: number | undefined;
+          if (myPages && ownerId) {
+            currentUserId = ownerId;
+          } else {
+            const authResult = await authenticate(event, false);
+            if (authResult.success) {
+              currentUserId = authResult.user!.id;
+            }
+          }
+
+          const pagesWithEditPermission = result.pages.map((page) => ({
+            ...page,
+            can_edit: currentUserId ? page.owner_id === currentUserId : false,
+          }));
+
           return ErrorHandler.createSuccessResponse(
             {
-              pages: result.pages,
+              pages: pagesWithEditPermission,
               pagination: {
                 page: pageNum,
                 limit: limitNum,
@@ -91,9 +107,17 @@ export default defineEventHandler(async (event) => {
             offset,
           });
 
+          // For user's own pages, can_edit is always true
+          const pagesWithEditPermission = result.pages.map((page) => ({
+            ...page,
+            owner_name: authResult.user!.name,
+            owner_email: authResult.user!.email,
+            can_edit: true,
+          }));
+
           return ErrorHandler.createSuccessResponse(
             {
-              pages: result.pages,
+              pages: pagesWithEditPermission,
               pagination: {
                 page: pageNum,
                 limit: limitNum,
@@ -110,9 +134,21 @@ export default defineEventHandler(async (event) => {
             offset,
           });
 
+          // Add can_edit field based on current user (optional auth)
+          let currentUserId: number | undefined;
+          const authResult = await authenticate(event, false);
+          if (authResult.success) {
+            currentUserId = authResult.user!.id;
+          }
+
+          const pagesWithEditPermission = result.pages.map((page) => ({
+            ...page,
+            can_edit: currentUserId ? page.owner_id === currentUserId : false,
+          }));
+
           return ErrorHandler.createSuccessResponse(
             {
-              pages: result.pages,
+              pages: pagesWithEditPermission,
               pagination: {
                 page: pageNum,
                 limit: limitNum,
