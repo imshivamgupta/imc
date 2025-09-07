@@ -30,7 +30,8 @@ export default defineNuxtConfig({
     preset: process.env.NITRO_PRESET || "node-server",
     prerender: {
       routes: [], // No prerendering
-      crawlLinks: false,
+      crawlLinks: false, // Don't follow links to discover routes
+      ignore: ["/**"], // Ignore all routes for prerendering
     },
   },
 
