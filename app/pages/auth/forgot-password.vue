@@ -1,54 +1,88 @@
 <template>
-  <div class="auth-page">
-    <div class="reset-form">
-      <form @submit.prevent="handleSubmit" class="form">
-        <h2 class="form-title">Reset Password</h2>
+  <div class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+      <Card>
+        <CardHeader class="text-center">
+          <CardTitle class="text-2xl font-bold">Reset Password</CardTitle>
+          <CardDescription>
+            Enter your email address and we'll send you a link to reset your
+            password.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form @submit.prevent="handleSubmit" class="space-y-4">
+            <Alert v-if="error" variant="destructive">
+              <AlertCircle class="h-4 w-4" />
+              <AlertDescription>{{ error }}</AlertDescription>
+            </Alert>
 
-        <div v-if="error" class="error-message">
-          {{ error }}
-        </div>
+            <Alert v-if="successMessage" class="border-green-200 bg-green-50">
+              <CheckCircle class="h-4 w-4 text-green-600" />
+              <AlertDescription class="text-green-800">{{
+                successMessage
+              }}</AlertDescription>
+            </Alert>
 
-        <div v-if="successMessage" class="success-message">
-          {{ successMessage }}
-        </div>
+            <div class="space-y-2">
+              <Label for="email">Email Address</Label>
+              <div class="relative">
+                <Mail class="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  id="email"
+                  v-model="email"
+                  type="email"
+                  placeholder="Enter your email address"
+                  class="pl-10"
+                  :class="{ 'border-red-500': emailError }"
+                  required
+                />
+              </div>
+              <p v-if="emailError" class="text-sm text-red-500">
+                {{ emailError }}
+              </p>
+            </div>
 
-        <div class="form-group">
-          <label for="email" class="form-label">Email Address</label>
-          <input
-            id="email"
-            v-model="email"
-            type="email"
-            class="form-input"
-            :class="{ error: emailError }"
-            placeholder="Enter your email address"
-            required
-          />
-          <span v-if="emailError" class="field-error">{{ emailError }}</span>
-          <p class="field-help">
-            We'll send you a link to reset your password.
-          </p>
-        </div>
-
-        <button
-          type="submit"
-          class="submit-button"
-          :disabled="isLoading || !isFormValid"
-        >
-          <span v-if="isLoading" class="spinner"></span>
-          {{ isLoading ? "Sending..." : "Send Reset Link" }}
-        </button>
-
-        <div class="form-links">
-          <NuxtLink to="/auth/login" class="link">
-            Remember your password? Sign in
-          </NuxtLink>
-        </div>
-      </form>
+            <Button
+              type="submit"
+              class="w-full"
+              :disabled="isLoading || !isFormValid"
+            >
+              <Loader2 v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
+              {{ isLoading ? "Sending..." : "Send Reset Link" }}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter class="text-center">
+          <div class="text-sm text-muted-foreground">
+            Remember your password?
+            <NuxtLink
+              to="/auth/login"
+              class="text-primary hover:underline ml-1"
+            >
+              Sign in
+            </NuxtLink>
+          </div>
+        </CardFooter>
+      </Card>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { Alert, AlertDescription } from "~/components/ui/alert";
+import { AlertCircle, CheckCircle, Mail, Loader2 } from "lucide-vue-next";
+
 definePageMeta({
   layout: "auth",
 });
@@ -97,7 +131,7 @@ const handleSubmit = async () => {
   error.value = "";
 
   try {
-    const response = await $fetch("/api/auth/password-reset-request", {
+    const response: any = await $fetch("/api/auth/password-reset-request", {
       method: "POST",
       body: { email: email.value },
     });
@@ -121,155 +155,3 @@ watch(email, () => {
   }
 });
 </script>
-
-<style scoped>
-.auth-page {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.reset-form {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.form {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.form-title {
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #333;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.error-message {
-  background: #fee;
-  color: #c53030;
-  padding: 0.75rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  border: 1px solid #feb2b2;
-}
-
-.success-message {
-  background: #f0fff4;
-  color: #22543d;
-  padding: 0.75rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  border: 1px solid #9ae6b4;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #374151;
-  font-weight: 500;
-}
-
-.form-input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  font-size: 1rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.form-input.error {
-  border-color: #dc2626;
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-}
-
-.field-error {
-  color: #dc2626;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-  display: block;
-}
-
-.field-help {
-  color: #6b7280;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-}
-
-.submit-button {
-  width: 100%;
-  background: #3b82f6;
-  color: white;
-  padding: 0.75rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.submit-button:hover:not(:disabled) {
-  background: #2563eb;
-}
-
-.submit-button:disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
-}
-
-.spinner {
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid transparent;
-  border-top: 2px solid currentColor;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.form-links {
-  margin-top: 1.5rem;
-  text-align: center;
-}
-
-.link {
-  color: #3b82f6;
-  text-decoration: none;
-  font-size: 0.875rem;
-  transition: color 0.2s;
-}
-
-.link:hover {
-  color: #2563eb;
-  text-decoration: underline;
-}
-</style>
