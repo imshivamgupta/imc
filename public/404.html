@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InMyCity - Page Not Found</title>
+    <script>
+      // GitHub Pages SPA redirect script
+      // This script takes the current page and redirects to the homepage with the path as a query parameter
+      const path = window.location.pathname.slice(1);
+      if (path) {
+        window.location.replace(window.location.origin + "/#/" + path);
+      }
+    </script>
+  </head>
+  <body>
+    <div
+      style="
+        text-align: center;
+        margin-top: 50px;
+        font-family: Arial, sans-serif;
+      "
+    >
+      <h1>Redirecting...</h1>
+      <p>
+        If you are not redirected automatically, <a href="/">click here</a>.
+      </p>
+    </div>
+  </body>
+</html>
