@@ -352,8 +352,8 @@ const copyPageUrl = async () => {
     return;
   }
 
-  if (typeof window === 'undefined') return; // SSR check
-  
+  if (typeof window === "undefined") return; // SSR check
+
   const url = `${window.location.origin}/pages/${page.value.slug}`;
   try {
     await navigator.clipboard.writeText(url);
@@ -371,8 +371,8 @@ const shareePage = () => {
     return;
   }
 
-  if (typeof window === 'undefined') return; // SSR check
-  
+  if (typeof window === "undefined") return; // SSR check
+
   const url = `${window.location.origin}/pages/${page.value.slug}`;
   if (navigator.share) {
     navigator.share({

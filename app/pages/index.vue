@@ -84,8 +84,9 @@
           local businesses • social presence
         </div>
       </div>
+
       <div
-        class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24"
+        class="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-8"
       >
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <!-- Content Side -->
@@ -173,28 +174,30 @@
             <div
               class="relative z-10 w-48 h-48 lg:w-64 lg:h-64 rounded-full bg-gradient-to-br from-violet-300 to-purple-400 flex items-center justify-center shadow-2xl hero-image"
             >
-              <div class="text-4xl lg:text-6xl">🏙️</div>
+              <Building2 class="w-16 h-16 text-white" />
             </div>
 
-            <!-- Floating elements -->
+            <!-- Floating elements with proper Lucide icons -->
             <div
               class="absolute top-1/4 left-1/4 w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center floating-element"
             >
-              <span class="text-2xl">🏪</span>
+              <Store class="w-8 h-8 text-blue-600" />
             </div>
             <div
               class="absolute bottom-1/3 right-1/4 w-12 h-12 bg-violet-100 rounded-full shadow-lg flex items-center justify-center floating-element"
             >
-              <span class="text-xl">�️</span>
+              <ShoppingBag class="w-6 h-6 text-violet-600" />
             </div>
             <div
-              class="absolute top-1/3 right-1/3 w-8 h-8 bg-purple-200 rounded-full shadow-md floating-element flex items-center justify-center"
+              class="absolute top-1/3 right-1/3 w-8 h-8 bg-purple-200 rounded-full shadow-md floating-element flex items-center justify-center z-10"
             >
-              <span class="text-sm">🛍️</span>
+              <UtensilsCrossed class="w-4 h-4 text-purple-600" />
             </div>
             <div
-              class="absolute bottom-1/4 left-1/3 w-6 h-6 bg-indigo-200 rounded-full shadow-md floating-element"
-            ></div>
+              class="absolute bottom-1/4 left-1/3 w-8 h-8 bg-purple-200 rounded-full shadow-md floating-element flex items-center justify-center"
+            >
+              <MapPin class="w-4 h-4 text-indigo-600" />
+            </div>
           </div>
         </div>
       </div>
@@ -222,9 +225,9 @@
             <NuxtLink to="/users">
               <CardHeader class="text-center">
                 <div
-                  class="mx-auto h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center text-2xl group-hover:bg-blue-200 transition-colors"
+                  class="mx-auto h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors"
                 >
-                  🏪
+                  <Store class="w-6 h-6 text-blue-600" />
                 </div>
                 <CardTitle class="text-lg">Local Businesses</CardTitle>
               </CardHeader>
@@ -243,9 +246,9 @@
             <NuxtLink to="/users-ssr" @click="navigateToSSR">
               <CardHeader class="text-center">
                 <div
-                  class="mx-auto h-12 w-12 rounded-lg bg-orange-100 flex items-center justify-center text-2xl group-hover:bg-orange-200 transition-colors"
+                  class="mx-auto h-12 w-12 rounded-lg bg-orange-100 flex items-center justify-center group-hover:bg-orange-200 transition-colors"
                 >
-                  �️
+                  <Building2 class="w-6 h-6 text-orange-600" />
                 </div>
                 <CardTitle class="text-lg">Shopping Centers</CardTitle>
               </CardHeader>
@@ -267,9 +270,9 @@
             <NuxtLink to="/posts">
               <CardHeader class="text-center">
                 <div
-                  class="mx-auto h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center text-2xl group-hover:bg-green-200 transition-colors"
+                  class="mx-auto h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition-colors"
                 >
-                  🍽️
+                  <UtensilsCrossed class="w-6 h-6 text-green-600" />
                 </div>
                 <CardTitle class="text-lg">Restaurants</CardTitle>
               </CardHeader>
@@ -288,9 +291,9 @@
             <NuxtLink to="/auth/register">
               <CardHeader class="text-center">
                 <div
-                  class="mx-auto h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center text-2xl group-hover:bg-purple-200 transition-colors"
+                  class="mx-auto h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors"
                 >
-                  �
+                  <Briefcase class="w-6 h-6 text-purple-600" />
                 </div>
                 <CardTitle class="text-lg">Business Solutions</CardTitle>
               </CardHeader>
@@ -326,9 +329,9 @@
           <Card class="text-center">
             <CardHeader>
               <div
-                class="mx-auto h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center text-3xl mb-4"
+                class="mx-auto h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center mb-4"
               >
-                �️
+                <MapPin class="w-8 h-8 text-blue-600" />
               </div>
               <CardTitle class="text-xl">City Explorer</CardTitle>
             </CardHeader>
@@ -344,9 +347,9 @@
           <Card class="text-center">
             <CardHeader>
               <div
-                class="mx-auto h-16 w-16 rounded-full bg-green-100 flex items-center justify-center text-3xl mb-4"
+                class="mx-auto h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mb-4"
               >
-                🌐
+                <Globe class="w-8 h-8 text-green-600" />
               </div>
               <CardTitle class="text-xl">Social Presence</CardTitle>
             </CardHeader>
@@ -362,9 +365,9 @@
           <Card class="text-center">
             <CardHeader>
               <div
-                class="mx-auto h-16 w-16 rounded-full bg-purple-100 flex items-center justify-center text-3xl mb-4"
+                class="mx-auto h-16 w-16 rounded-full bg-purple-100 flex items-center justify-center mb-4"
               >
-                🤝
+                <Users class="w-8 h-8 text-purple-600" />
               </div>
               <CardTitle class="text-xl">Business Connect</CardTitle>
             </CardHeader>
@@ -380,9 +383,9 @@
           <Card class="text-center">
             <CardHeader>
               <div
-                class="mx-auto h-16 w-16 rounded-full bg-orange-100 flex items-center justify-center text-3xl mb-4"
+                class="mx-auto h-16 w-16 rounded-full bg-orange-100 flex items-center justify-center mb-4"
               >
-                �
+                <Zap class="w-8 h-8 text-orange-600" />
               </div>
               <CardTitle class="text-xl">Modern Platform</CardTitle>
             </CardHeader>
@@ -404,9 +407,17 @@
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
-import { Separator } from "~/components/ui/separator";
-import { Alert, AlertDescription } from "~/components/ui/alert";
-import { Avatar, AvatarFallback } from "~/components/ui/avatar";
+import {
+  Store,
+  ShoppingBag,
+  Building2,
+  MapPin,
+  UtensilsCrossed,
+  Briefcase,
+  Globe,
+  Users,
+  Zap,
+} from "lucide-vue-next";
 
 // Set page metadata
 useHead({
