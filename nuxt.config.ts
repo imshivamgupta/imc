@@ -23,18 +23,23 @@ export default defineNuxtConfig({
     componentDir: "./app/components/ui",
   },
 
-  // Option A: Disable SSR globally
-  // ssr: false,
-
-  // Option B: Disable SSR for specific routes
+  // GitHub Pages deployment configuration
   nitro: {
+    preset: process.env.NITRO_PRESET || "node-server",
     routeRules: {
       "/users": { ssr: false }, // Disable SSR for users page
-      // '/admin/**': { ssr: false }, // Disable SSR for all admin routes
-      // '/dashboard/**': { ssr: false }, // Disable SSR for all dashboard routes
+      "/pages-test": { ssr: false }, // Disable SSR for pages-test
+      // For GitHub Pages static deployment, prerender main routes
+      "/": { prerender: true },
+      "/auth/**": { ssr: false },
+      "/pages/**": { ssr: false },
+      "/profile": { ssr: false },
+      "/create-page": { ssr: false },
+      "/edit-page/**": { ssr: false },
     },
   },
 
+  // GitHub Pages configuration
   app: {
     head: {
       title: "Users Management App",
@@ -47,6 +52,23 @@ export default defineNuxtConfig({
             "Modern user management dashboard built with Vue.js and Nuxt 3",
         },
       ],
+    },
+    // Base URL for GitHub Pages (will be set by GitHub Actions)
+    baseURL: process.env.NUXT_APP_BASE_URL || "/",
+  },
+
+  // Environment variables for build
+  runtimeConfig: {
+    // Private keys (only available on server-side)
+    jwtSecret: process.env.JWT_SECRET || "your-super-secret-jwt-key",
+    databaseUrl:
+      process.env.DATABASE_URL ||
+      "postgresql://postgres:password@localhost:5432/inmycity_dev",
+
+    // Public keys (exposed to client-side)
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || "/api",
+      appName: "InMyCity",
     },
   },
 });
