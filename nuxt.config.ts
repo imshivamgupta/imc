@@ -50,7 +50,7 @@ export default defineNuxtConfig({
       ],
     },
     // Base URL for GitHub Pages (will be set by GitHub Actions)
-    baseURL: process.env.NUXT_APP_BASE_URL || "/",
+    baseURL: process.env.NUXT_APP_BASE_URL || "/imc",
   },
 
   // Environment variables for build
