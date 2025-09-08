@@ -60,20 +60,4 @@ definePageMeta({
 });
 </script>
 
-<style scoped>
-.prose {
-  @apply text-foreground;
-}
-
-.prose h1 {
-  @apply text-3xl font-bold mb-6 text-foreground;
-}
-
-.prose h2 {
-  @apply text-xl font-semibold mt-8 mb-4 text-foreground;
-}
-
-.prose p {
-  @apply mb-4 leading-relaxed;
-}
-</style>
+<style scoped></style>
